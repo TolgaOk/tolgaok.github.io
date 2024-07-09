@@ -169,7 +169,7 @@ a {
       gap: 2rem;
       top: 0;
       width: $sidePanelWidth;
-      margin-top: $topSpacing;
+      margin-top: $topSpacing + 1.1rem;
       box-sizing: border-box;
       padding: 0 4rem;
       position: fixed;
@@ -207,7 +207,7 @@ a {
     margin: $topSpacing auto 0 auto;
     @media all and (max-width: $fullPageWidth) {
       width: initial;
-      margin-top: 2rem;
+      margin-top: 0rem;
     }
   }
 
@@ -309,7 +309,7 @@ h6 {
 // typography improvements
 h1 {
   font-size: 1.75rem;
-  margin-top: 2.25rem;
+  margin-top: 1rem;
   margin-bottom: 1rem;
 }
 

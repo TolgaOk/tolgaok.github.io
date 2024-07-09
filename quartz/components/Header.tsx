@@ -9,8 +9,9 @@ header {
   display: flex;
   flex-direction: row;
   align-items: center;
-  margin: 2rem 0;
-  gap: 1.5rem;
+  margin: 0rem 0;
+  gap: 0rem;
+  justify-content: space-between;
 }
 
 header h1 {

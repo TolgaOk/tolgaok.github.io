@@ -19,6 +19,9 @@ import DesktopOnly from "./DesktopOnly"
 import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
+import Hero from "./Hero"
+import TopHead from "./TopHead"
+import HorizontalLayout from "./HorizontalLayout"
 
 export {
   ArticleTitle,
@@ -42,4 +45,7 @@ export {
   RecentNotes,
   NotFound,
   Breadcrumbs,
+  Hero,
+  TopHead,
+  HorizontalLayout
 }
