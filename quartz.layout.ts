@@ -4,13 +4,8 @@ import * as Component from "./quartz/components"
 // components shared across all pages
 export const sharedPageComponents: SharedLayout = {
   head: Component.Head(),
-    header: [Component.TopHead(), Component.Darkmode()],
-  footer: Component.Footer({
-    links: {
-      GitHub: "https://github.com/jackyzha0/quartz",
-      "Discord Community": "https://discord.gg/cRFFHYye7t",
-    },
-  }),
+  header: [Component.TopHead(), Component.Darkmode()],
+  footer: Component.ShowIfIndex(Component.Footer()),
 }
 // components for pages that display a single page (e.g. a single note)
 export const defaultContentPageLayout: PageLayout = {
@@ -18,22 +13,18 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Breadcrumbs(),
     // Component.ArticleTitle(),
     Component.TagList(),
-    
+
   ],
   left: [
-    // Component.ContentMeta(),
-    // Component.PageTitle(),
-    Component.Search(),
-    Component.MobileOnly(Component.Spacer()),
-    
-    // Component.DesktopOnly(Component.Graph()),
-    // Component.DesktopOnly(Component.Backlinks()),
-    Component.DesktopOnly(Component.Explorer()),
-    // Component.Graph(),
+    Component.ShowIfIndex(Component.Hero("selfie.jpg")),
+    Component.ShowIfNotIndex(Component.Search()),
+    Component.ShowIfNotIndex(Component.MobileOnly(Component.Spacer())),
+
+    Component.ShowIfNotIndex((Component.DesktopOnly(Component.Explorer()))),
   ],
   right: [
     Component.DesktopOnly(Component.TableOfContents()),
-    // Component.DesktopOnly(Component.TableOfContents()),
+    // Component.ShowIfNotIndex(Component.Graph()),
     // Component.Backlinks(),
   ],
 }

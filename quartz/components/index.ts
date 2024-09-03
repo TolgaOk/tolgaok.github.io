@@ -22,6 +22,9 @@ import Breadcrumbs from "./Breadcrumbs"
 import Hero from "./Hero"
 import TopHead from "./TopHead"
 import HorizontalLayout from "./HorizontalLayout"
+import ShowIfIndex from "./ShowIfIndex"
+import ShowIfNotIndex from "./ShowIfNotIndex"
+
 
 export {
   ArticleTitle,
@@ -47,5 +50,7 @@ export {
   Breadcrumbs,
   Hero,
   TopHead,
-  HorizontalLayout
+  HorizontalLayout,
+  ShowIfIndex,
+  ShowIfNotIndex,
 }

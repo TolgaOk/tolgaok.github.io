@@ -227,10 +227,7 @@ export function renderPage(
       <body data-slug={slug}>
         <div id="quartz-root" class="page">
           <Body {...componentData}>
-            {slug === "index"
-              ? HeroComponent
-              : LeftComponent
-            }
+            {LeftComponent}
             <div class="center">
               <div class="page-header">
                 <Header {...componentData}>
@@ -245,16 +242,8 @@ export function renderPage(
                 </div>
               </div>
               <Content {...componentData} />
-              {/* {slug === "index"
-              ? <TopHeadComponent {...componentData} />
-              : <div></div>
-              } */}
             </div>
-            {<div></div>}
-            {slug === "index"
-              ? <div></div>
-              : RightComponent
-            }
+            {RightComponent}
           </Body>
           <Footer {...componentData} />
         </div>
