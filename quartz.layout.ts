@@ -13,18 +13,16 @@ export const defaultContentPageLayout: PageLayout = {
     Component.Breadcrumbs(),
     // Component.ArticleTitle(),
     Component.TagList(),
-
   ],
   left: [
     Component.ShowIfIndex(Component.Hero("selfie.jpg")),
     Component.ShowIfNotIndex(Component.Search()),
     Component.ShowIfNotIndex(Component.MobileOnly(Component.Spacer())),
-
     Component.ShowIfNotIndex((Component.DesktopOnly(Component.Explorer()))),
   ],
   right: [
+    Component.DesktopOnly(Component.ShowIfNotIndex(Component.Graph())),
     Component.DesktopOnly(Component.TableOfContents()),
-    // Component.ShowIfNotIndex(Component.Graph()),
     // Component.Backlinks(),
   ],
 }

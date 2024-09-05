@@ -5,7 +5,7 @@
 
     svg {
       height: 1rem;
-      color: #2C3E50;
+      color: var(--dark);
       transition: width 0.2s, height 0.2s, transform 0.2s;
   }
 }
@@ -30,9 +30,9 @@
   flex-direction: row;
   display: flex;
   justify-content: space-between;
-  background-color: #EBEBEC;
+  background-color: var(--lightgray);
   border-radius: 10px;
-  color: #2C3E50;
+  color: var(--dark);
   text-decoration: none;
   font-size: 20px;
   font-weight: bold;
@@ -46,11 +46,19 @@
   padding: 0px 4px 0px 4px;
 }
 
+.header-box-title {
+  padding: 0px 4px 0px 4px;
+  display: none;
+  @media screen and (min-width: 800px) {
+    display: block;
+}
+}
+
 
 
 .nav-item:hover svg,
 .nav-item:focus svg {
-      color: #83A39B;
+      color: var(--tertiary);
       transform: scale(1.05);
       transform: rotate(5deg);
 }
