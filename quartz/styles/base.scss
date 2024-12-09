@@ -181,8 +181,6 @@ a {
     & .sidebar {
       gap: 2rem;
       top: 0;
-      width: $sidePanelWidth;
-      margin-top: $topSpacing + 1.1rem;
       box-sizing: border-box;
       padding: $topSpacing 2rem 2rem 2rem;
       display: flex;
@@ -233,12 +231,21 @@ a {
       margin-top: 1rem;
     }
 
-  & .page-header {
-    width: $pageWidth;
-    margin: $topSpacing auto 0 auto;
-    @media all and (max-width: $fullPageWidth) {
-      width: initial;
-      margin-top: 0rem;
+    & .page-header {
+      grid-area: grid-header;
+      margin: $topSpacing 0 0 0;
+      @media all and ($mobile) {
+        margin-top: 0;
+        padding: 0;
+      }
+    }
+
+    & .center > article {
+      grid-area: grid-center;
+    }
+
+    & footer {
+      grid-area: grid-footer;
     }
 
     & .center,
@@ -346,7 +353,7 @@ h6 {
 // typography improvements
 h1 {
   font-size: 1.75rem;
-  margin-top: 1rem;
+  margin-top: 2.25rem;
   margin-bottom: 1rem;
 }
 
@@ -571,4 +578,12 @@ ol.overflow {
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;
+}
+
+.external-embed.youtube,
+iframe.pdf {
+  aspect-ratio: 16 / 9;
+  height: 100%;
+  width: 100%;
+  border-radius: 5px;
 }
