@@ -10,8 +10,6 @@ tags:
 ## [Modular-Baselines](https://github.com/TolgaOk/Modular-Baselines)
 is a library designed for Deep reinforcement learning (DRL) research.
 
-> [!warning]
-> This repository is under development!
 
 To keep the codebase easy to read and maintain, we've implemented each algorithm within a single script using the components provided in Modular-Baselines (MB). Our approach emphasizes duck-typing instead of inheritance, which helps us minimize the dependency between components and algorithms.
 

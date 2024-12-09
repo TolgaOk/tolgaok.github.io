@@ -9,7 +9,18 @@ draft: false
 - - -
 
 > [!post]
-> ### [[Convergence in off-policy setting]]
-> **A brief convergence analysis of the existing algorithms from the literature**
+> ### [[Convergence in Off-Policy Settings]]
+> **A Brief Convergence Analysis of Existing Algorithms in the Literature**
 >
-> Off-policy reinforcement learning (RL) is a challenging setting in RL, yet, it is crucial for practical application of the RL algorithms in the real-world scenarios. Here, we make a brief analysis of the existing algorithms in off-policy and offline settings.
+> ⚠️ *Under construction!*
+>
+> Off-policy reinforcement learning (RL) presents a challenging yet essential setting for the practical application of RL algorithms in real-world scenarios. In this post, we provide a concise analysis of existing algorithms in both off-policy and offline settings.
+
+
+> [!post]
+> ### [[Optimization to Reinforcement Learning]]
+> **An Optimization Perspective on Reinforcement Learning (RL) for Algorithm Design**
+>
+> ⚠️ *Under review!*
+>
+> Drawing inspiration from the correspondence between optimization and Markov Decision Processes (MDPs), we explore extensions of existing optimization algorithms to RL, employing a mathematically rigorous approach. In particular, we investigate Quasi-Newton methods and propose a novel RL algorithm that demonstrates convergence in both model-based and model-free settings, achieving $\mathcal{O}(n)$ memory and computational complexity.

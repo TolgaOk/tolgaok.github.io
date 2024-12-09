@@ -12,7 +12,7 @@ tags:
  is a vectorized Dynamic Programing package built on JAX for finite MDPs.
 
 > [!info]
-> Version: 0.1.0
+> Version: 0.2.0
 
 
 ## Example
