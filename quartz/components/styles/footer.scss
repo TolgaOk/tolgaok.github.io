@@ -11,5 +11,21 @@ footer {
     flex-direction: row;
     gap: 1rem;
     margin-top: -1rem;
+
+    p {
+      margin: 0;
+      text-align: center;
+    }
+
+    svg {
+      color: var(--dark)
+    }
+
+    :hover svg {
+      color: var(--tertiary);
+      transform: scale(1.1);
+    }
+    
+
   }
 }

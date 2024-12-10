@@ -1,0 +1,17 @@
+.hero-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 2px;
+    // margin-top: 5rem;
+    margin: 10px;
+    @media screen and (max-width: 1050px) {
+        display: none;
+    }
+}
+
+.hero-image {
+    height: auto;
+    border-radius: 50%;
+}

@@ -20,6 +20,12 @@ import MobileOnly from "./MobileOnly"
 import RecentNotes from "./RecentNotes"
 import Breadcrumbs from "./Breadcrumbs"
 import Comments from "./Comments"
+import Hero from "./Hero"
+import TopHead from "./TopHead"
+import HorizontalLayout from "./HorizontalLayout"
+import ShowIfIndex from "./ShowIfIndex"
+import ShowIfNotIndex from "./ShowIfNotIndex"
+
 
 export {
   ArticleTitle,
@@ -44,4 +50,9 @@ export {
   NotFound,
   Breadcrumbs,
   Comments,
+  Hero,
+  TopHead,
+  HorizontalLayout,
+  ShowIfIndex,
+  ShowIfNotIndex,
 }

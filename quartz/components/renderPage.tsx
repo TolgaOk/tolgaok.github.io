@@ -2,6 +2,8 @@ import { render } from "preact-render-to-string"
 import { QuartzComponent, QuartzComponentProps } from "./types"
 import HeaderConstructor from "./Header"
 import BodyConstructor from "./Body"
+import Hero from "./Hero"
+import TopHead from "./TopHead"
 import { JSResourceToScriptElement, StaticResources } from "../util/resources"
 import { clone, FullSlug, RelativeURL, joinSegments, normalizeHastElement } from "../util/path"
 import { visit } from "unist-util-visit"
@@ -216,6 +218,14 @@ export function renderPage(
       ))}
     </div>
   )
+
+  // const HeroComponentAlone = Hero()
+  // const HeroComponent = (
+  //   <div class="left sidebar">
+  //     <HeroComponentAlone {...componentData} />
+  //   </div>
+  // )
+  // const TopHeadComponent = TopHead()
 
   const lang = componentData.fileData.frontmatter?.lang ?? cfg.locale?.split("-")[0] ?? "en"
   const doc = (
