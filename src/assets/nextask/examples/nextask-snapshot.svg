@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 852 288" width="852" height="288" font-family="Inter, sans-serif">
+  
+      <defs>
+        <marker id="aS" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1.5 L8.5 5 L1 8.5" fill="none" stroke="#8c959f" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></marker>
+        <marker id="aSb" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1.5 L8.5 5 L1 8.5" fill="none" stroke="#0969da" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"></path></marker>
+        <clipPath id="clipSnap"><rect x="9" y="45" width="320" height="230"></rect></clipPath>
+      </defs>
+      
+      <rect x="8" y="12" width="322" height="264" rx="10" fill="#f6f8fa" stroke="#d8dde4"></rect>
+      <line x1="8" y1="44" x2="330" y2="44" stroke="#d8dde4"></line>
+      <circle cx="28" cy="28" r="4" fill="#8c959f" opacity="0.45"></circle><circle cx="42" cy="28" r="4" fill="#8c959f" opacity="0.45"></circle><circle cx="56" cy="28" r="4" fill="#8c959f" opacity="0.45"></circle>
+      <text x="169" y="32" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="10" fill="#57606a">you@local — nextask</text>
+      <g font-family="&#39;JetBrains Mono&#39;,monospace" font-size="12">
+        
+        <text x="26" y="64" fill="#1a1f27"><tspan fill="#1a7f37">❯</tspan> git status -s</text>
+        <g clip-path="url(#clipSnap)">
+          <rect x="40" y="53" width="98" height="16" fill="#f6f8fa" style="animation:typeGit 9s steps(13) infinite"></rect>
+          <rect x="40" y="54" width="7" height="12" fill="#1a7f37" style="animation:typeGit 9s steps(13) infinite, caretGit 9s infinite"></rect>
+        </g>
+        <g style="animation:gitOut1 9s ease infinite"><text x="26" y="86" fill="#57606a"><tspan fill="#1a7f37">A</tspan>  model.py</text></g>
+        <g style="animation:gitOut2 9s ease infinite"><text x="26" y="108" fill="#57606a"><tspan fill="#9a6700"> M</tspan> train.py</text></g>
+        
+        <g style="animation:nxCmd 9s ease infinite">
+          <text x="26" y="138" fill="#1a1f27"><tspan fill="#1a7f37">❯</tspan> nextask enqueue &#34;python train.py&#34; \</text>
+          <text x="26" y="160" fill="#1a1f27">    --snapshot</text>
+        </g>
+        <g clip-path="url(#clipSnap)">
+          <rect x="40" y="127" width="256" height="16" fill="#f6f8fa" style="animation:typeNx1 9s steps(35) infinite"></rect>
+          <rect x="40" y="128" width="7" height="12" fill="#1a7f37" style="animation:typeNx1 9s steps(35) infinite, caretNx1 9s infinite"></rect>
+          <rect x="26" y="149" width="106" height="16" fill="#f6f8fa" style="animation:typeNx2 9s steps(14) infinite"></rect>
+          <rect x="26" y="150" width="7" height="12" fill="#1a7f37" style="animation:typeNx2 9s steps(14) infinite, caretNx2 9s infinite"></rect>
+        </g>
+        <g style="animation:snCap 9s ease infinite"><text x="26" y="188" fill="#57606a"><tspan fill="#9a6700">●</tspan> captured 1 dirty file</text></g>
+        <g style="animation:snPush 9s ease infinite"><text x="26" y="210" fill="#57606a"><tspan fill="#1a7f37">✓</tspan> pushed branch 7f31aa</text></g>
+        <g style="animation:snPending 9s ease infinite">
+          <text x="26" y="238" fill="#57606a"><tspan fill="#0969da">[7f31aa]</tspan> pending · branch 7f31aa</text>
+          <text x="26" y="266" fill="#1a7f37">❯</text><rect x="36" y="257" width="7" height="11" fill="#1a7f37" style="animation:blink 1.1s step-end infinite"></rect>
+        </g>
+      </g>
+
+      
+      <g style="animation:snCap 9s ease infinite">
+        <path d="M330 158 L356 158" fill="none" stroke="#8c959f"></path>
+        <path d="M356 158 C372 158 374 95 392 95" fill="none" stroke="#8c959f" marker-end="url(#aS)"></path>
+        <path d="M356 158 C372 158 374 222 392 222" fill="none" stroke="#8c959f" marker-end="url(#aS)"></path>
+        <text x="360" y="110" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="8.5" fill="#8c959f">enqueue</text>
+        <text x="360" y="212" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="8.5" fill="#8c959f">push</text>
+      </g>
+
+      
+      <rect x="392" y="48" width="180" height="92" rx="10" fill="#fff" stroke="#d8dde4"></rect>
+      <text x="408" y="72" font-size="12.5" font-weight="600" fill="#1a1f27">queue</text>
+      <text x="558" y="72" text-anchor="end" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9" fill="#8c959f">postgres</text>
+      <line x1="392" y1="84" x2="572" y2="84" stroke="#d8dde4"></line>
+      <g style="animation:snPending 9s ease infinite">
+        <rect x="404" y="96" width="156" height="32" rx="7" fill="#f6f8fa"></rect>
+        <text x="416" y="116" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="11" fill="#1a1f27">7f31aa</text>
+        <g style="animation:snChipP 9s ease infinite">
+          <rect x="470" y="103" width="56" height="18" rx="9" fill="none" stroke="#e3c886"></rect><text x="498" y="115.5" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9" fill="#9a6700">pending</text>
+        </g>
+        <g style="animation:snChipR 9s ease infinite">
+          <rect x="470" y="103" width="56" height="18" rx="9" fill="none" stroke="#a3c7f0"></rect><text x="498" y="115.5" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9" fill="#0969da">running</text>
+        </g>
+      </g>
+
+      
+      <rect x="392" y="176" width="180" height="92" rx="10" fill="#fff" stroke="#d8dde4"></rect>
+      <image class="pgicon" x="406" y="182" width="24" height="24" href="data:image/png;base64,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" preserveAspectRatio="xMidYMid meet"></image>
+      <text x="438" y="199" font-size="12.5" font-weight="600" fill="#1a1f27">remote</text>
+      <text x="556" y="199" text-anchor="end" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9" fill="#8c959f">branch</text>
+      <line x1="392" y1="208" x2="572" y2="208" stroke="#d8dde4"></line>
+      <g style="animation:snPending 9s ease infinite">
+        <rect x="404" y="216" width="156" height="44" rx="7" fill="#f6f8fa"></rect>
+        <text x="416" y="242" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="11" fill="#1a1f27">7f31aa</text>
+        <text x="470" y="234" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9"><tspan fill="#8c959f">├─ </tspan><tspan fill="#1a7f37">model.py</tspan></text>
+        <text x="470" y="252" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9"><tspan fill="#8c959f">└─ </tspan><tspan fill="#9a6700">train.py</tspan></text>
+      </g>
+
+      
+      <g style="animation:snClone 9s ease infinite">
+        <path d="M572 100 C596 100 600 150 618 156" fill="none" stroke="#8c959f"></path>
+        <path d="M572 220 C596 220 600 162 618 156" fill="none" stroke="#8c959f"></path>
+        <path d="M618 156 L640 156" fill="none" stroke="#8c959f" marker-end="url(#aS)"></path>
+        <text x="616" y="110" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="8.5" fill="#8c959f">claim</text>
+        <text x="616" y="212" text-anchor="middle" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="8.5" fill="#8c959f">clone</text>
+      </g>
+
+      
+      <rect x="640" y="108" width="204" height="96" rx="10" fill="#fff" stroke="#d8dde4"></rect>
+      <rect x="640" y="108" width="204" height="96" rx="10" fill="none" stroke="#0969da" stroke-width="1.5" stroke-dasharray="8 6" opacity="0.75" style="animation:snWorkEdge 9s ease infinite, flow 1.4s linear infinite"></rect>
+      <text x="658" y="140" font-size="12.5" font-weight="600" fill="#1a1f27">worker-1</text>
+      <text x="658" y="178" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="11" fill="#8c959f" style="animation:snW1Idle 9s ease infinite">idle</text>
+      <text x="658" y="178" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="11" fill="#0969da" style="animation:snChipR 9s ease infinite">› python train.py</text>
+      
+      <circle r="5" fill="#0969da" style="offset-path:path(&#39;M330 158 L356 158 C372 158 374 95 392 95&#39;);animation:travelD 9s linear infinite"></circle>
+      <circle r="5" fill="#0969da" style="offset-path:path(&#39;M330 158 L356 158 C372 158 374 222 392 222&#39;);animation:travelD 9s linear infinite"></circle>
+      <circle r="5" fill="#0969da" style="offset-path:path(&#39;M572 100 C596 100 600 150 618 156 L640 156&#39;);animation:travelC 9s linear infinite"></circle>
+      <circle r="5" fill="#0969da" style="offset-path:path(&#39;M572 220 C596 220 600 162 618 156 L640 156&#39;);animation:travelC 9s linear infinite"></circle>
+    </svg>

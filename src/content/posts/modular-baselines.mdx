@@ -1,0 +1,35 @@
+---
+title: modular-baselines
+description: A deep reinforcement learning library for research, built on duck-typed components.
+date: 2024-09-04
+kind: software
+---
+
+import Header from "@/components/Header.astro";
+
+<Header
+  title="modular-baselines"
+  authors={[]}
+  links={[
+    {
+      name: "Code",
+      url: "https://github.com/TolgaOk/Modular-Baselines",
+      icon: "ri:github-line",
+    },
+  ]}
+/>
+
+[Modular-Baselines](https://github.com/TolgaOk/Modular-Baselines) is a library designed for deep reinforcement learning (DRL) research.
+
+To keep the codebase easy to read and maintain, we've implemented each algorithm within a single script using the components provided in Modular-Baselines (MB). Our approach emphasizes duck-typing instead of inheritance, which helps us minimize the dependency between components and algorithms.
+
+## Algorithms
+
+MB provides **tested** baseline implementations of the algorithms shown below.
+
+| Algorithm | JAX | PyTorch |
+| :-------: | :-: | :-----: |
+|    A2C    | ❌  |   ✔️    |
+|    PPO    | ✔️  |   ✔️    |
+|    SAC    | ❌  |   ❌    |
+|    TD3    | ❌  |   ❌    |

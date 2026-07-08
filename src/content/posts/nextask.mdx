@@ -1,0 +1,126 @@
+---
+title: nextask
+description: A distributed task queue with live log streaming and git-based reproducibility snapshots.
+date: 2026-03-30
+kind: software
+image: ../../assets/nextask/nextask-mark.svg
+---
+
+import { Image } from "astro:assets";
+import Header from "@/components/Header.astro";
+import HighlightedSection from "@/components/HighlightedSection.astro";
+import Figure from "@/components/Figure.astro";
+import Wide from "@/components/Wide.astro";
+import NextaskDiagram from "@/components/NextaskDiagram.astro";
+import NextaskFigure from "@/components/NextaskFigure.astro";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/starwind/tabs";
+
+import lockupLight from "@/assets/nextask/nextask-lockup-light.svg";
+import lockupDark from "@/assets/nextask/nextask-lockup-dark.svg";
+
+<Header
+  authors={[{ name: "Tolga Ok", url: "https://tolgaok.github.io" }]}
+  links={[
+    {
+      name: "Code",
+      url: "https://github.com/TolgaOk/nextask",
+      icon: "ri:github-line",
+    },
+    {
+      name: "Install",
+      url: "#install",
+      icon: "ri:download-2-line",
+    },
+  ]}
+>
+  <Fragment slot="title">
+    <Image
+      src={lockupLight}
+      alt="nextask"
+      class="not-prose m-0 h-16 w-auto dark:hidden"
+    />
+    <Image
+      src={lockupDark}
+      alt="nextask"
+      class="not-prose m-0 hidden h-16 w-auto dark:block"
+    />
+  </Fragment>
+</Header>
+
+<HighlightedSection>
+
+## Overview
+
+Running a batch of jobs across a few machines usually means babysitting SSH sessions and losing track of what ran where. **nextask** is a small distributed task queue that keeps the bookkeeping: you enqueue commands from one place, workers claim them atomically, and heartbeats catch the ones that stall. Each task can carry a git snapshot of the exact tree it ran from, so any run stays reproducible, which makes it a natural fit for ML sweeps and agent-driven workflows.
+
+</HighlightedSection>
+
+## How it works
+
+<Wide>
+  <Figure>
+    <NextaskDiagram slot="figure" />
+    <Fragment slot="caption">
+      One task through its lifecycle: (1) the CLI enqueues it into the
+      Postgres-backed queue, (2) `--snapshot` pushes the working tree to the
+      git remote, (3) a matching worker claims it atomically, and (4) logs
+      stream back to the attached client live. Green dots are worker
+      heartbeats; the status chip moves from pending to running to completed.
+    </Fragment>
+  </Figure>
+</Wide>
+
+## Commands
+
+Each command touches only the part of the system it needs.
+
+<Tabs defaultValue="list">
+  <TabsList>
+    <TabsTrigger value="list" class="font-mono">list</TabsTrigger>
+    <TabsTrigger value="log" class="font-mono">log</TabsTrigger>
+    <TabsTrigger value="tag" class="font-mono">{"--tag"}</TabsTrigger>
+    <TabsTrigger value="snapshot" class="font-mono">{"--snapshot"}</TabsTrigger>
+  </TabsList>
+    <TabsContent value="list">
+
+`nextask list` reads the current tasks straight from the queue, with each one's status and the worker holding it.
+
+<NextaskFigure names={["list"]} />
+
+    </TabsContent>
+    <TabsContent value="log">
+
+`nextask log <id>` prints a task's buffered output and returns; flip `--attach` to follow it live, streaming each new line until the task exits.
+
+<NextaskFigure names={["log", "attach"]} toggle="--attach" />
+
+    </TabsContent>
+    <TabsContent value="tag">
+
+Tags route work: enqueuing with `--tag image=pytorch` sends the task only to a worker whose filter matches.
+
+<NextaskFigure names={["tag"]} />
+
+    </TabsContent>
+    <TabsContent value="snapshot">
+
+`--snapshot` captures the working tree (including uncommitted changes) and pushes it to a git remote, so the worker clones the exact code that produced the run.
+
+<NextaskFigure names={["snapshot"]} />
+
+    </TabsContent>
+  </Tabs>
+
+## Agent-ready
+
+nextask is agent ready by design. Install the [skills](https://github.com/TolgaOk/nextask/tree/main/skills) to let agents set up services, deploy workers, and manage tasks:
+
+```sh
+npx skills add https://github.com/TolgaOk/nextask/skills
+```
+
+## Install
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/TolgaOk/nextask/main/install | bash
+```

@@ -1,0 +1,215 @@
+---
+// A command-flow figure for the nextask post. Pass one name for a plain figure,
+// or two names plus a `toggle` label for a switch that flips between them (log /
+// log --attach). The SVG markup is imported raw from the design export; its
+// elements reference the animation keyframes below by name, so the keyframes are
+// declared globally (Astro would otherwise rename scoped keyframes and break the
+// inline refs).
+import listSvg from "@/assets/nextask/examples/nextask-list.svg?raw";
+import logSvg from "@/assets/nextask/examples/nextask-log.svg?raw";
+import attachSvg from "@/assets/nextask/examples/nextask-attach.svg?raw";
+import tagSvg from "@/assets/nextask/examples/nextask-tag.svg?raw";
+import snapshotSvg from "@/assets/nextask/examples/nextask-snapshot.svg?raw";
+
+const SVGS: Record<string, string> = {
+  list: listSvg,
+  log: logSvg,
+  attach: attachSvg,
+  tag: tagSvg,
+  snapshot: snapshotSvg,
+};
+
+interface Props {
+  names: string[];
+  toggle?: string;
+}
+
+const { names, toggle } = Astro.props;
+const toggleId = `nxt-tgl-${names.join("-")}`;
+---
+
+<div class="nxt-ex">
+  {
+    toggle ? (
+      <div class="toggle-wrap">
+        <input type="checkbox" id={toggleId} class="tgl" />
+        <label for={toggleId} class="switch">
+          <span class="track">
+            <span class="thumb" />
+          </span>
+          <span class="lbl">{toggle}</span>
+        </label>
+        <div class="fig fig-a" set:html={SVGS[names[0]]} />
+        <div class="fig fig-b" set:html={SVGS[names[1]]} />
+      </div>
+    ) : (
+      <div class="fig" set:html={SVGS[names[0]]} />
+    )
+  }
+</div>
+
+<style>
+  .nxt-ex .fig {
+    display: flex;
+    justify-content: center;
+  }
+  .nxt-ex .fig :global(svg) {
+    width: 100%;
+    height: auto;
+    max-width: 46rem;
+  }
+
+  .toggle-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .toggle-wrap .tgl {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    opacity: 0;
+  }
+  .toggle-wrap .switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.85rem;
+    cursor: pointer;
+    user-select: none;
+  }
+  .toggle-wrap .track {
+    position: relative;
+    width: 2.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    background: var(--color-zinc-300);
+    transition: background 150ms;
+  }
+  .toggle-wrap .thumb {
+    position: absolute;
+    top: 0.125rem;
+    left: 0.125rem;
+    width: 1rem;
+    height: 1rem;
+    border-radius: 9999px;
+    background: #fff;
+    box-shadow: 0 1px 2px rgb(0 0 0 / 0.2);
+    transition: transform 150ms;
+  }
+  .toggle-wrap .lbl {
+    font-family: var(--font-mono, ui-monospace, monospace);
+    font-size: 0.8rem;
+    color: var(--color-zinc-600);
+  }
+  .toggle-wrap .tgl:focus-visible ~ .switch .track {
+    outline: 2px solid var(--color-blue-600);
+    outline-offset: 2px;
+  }
+  .toggle-wrap .tgl:checked ~ .switch .track {
+    background: var(--color-blue-600);
+  }
+  .toggle-wrap .tgl:checked ~ .switch .thumb {
+    transform: translateX(1rem);
+  }
+  .toggle-wrap .fig-b {
+    display: none;
+  }
+  .toggle-wrap .tgl:checked ~ .fig-a {
+    display: none;
+  }
+  .toggle-wrap .tgl:checked ~ .fig-b {
+    display: flex;
+  }
+
+  :global(html[data-theme="dark"]) .toggle-wrap .track {
+    background: var(--color-zinc-600);
+  }
+  :global(html[data-theme="dark"]) .toggle-wrap .lbl {
+    color: var(--color-zinc-400);
+  }
+  @media (prefers-color-scheme: dark) {
+    :global(html[data-theme="device"]) .toggle-wrap .track {
+      background: var(--color-zinc-600);
+    }
+    :global(html[data-theme="device"]) .toggle-wrap .lbl {
+      color: var(--color-zinc-400);
+    }
+  }
+</style>
+
+<style is:global>
+  @keyframes flow { to { stroke-dashoffset: -56; } }
+  @keyframes blink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+  @keyframes resIn { 0%, 42% { opacity: 0; } 46%, 90% { opacity: 1; } 95%, 100% { opacity: 0; } }
+  @keyframes listArrow { 0%, 30% { opacity: 0; } 34%, 90% { opacity: 1; } 95%, 100% { opacity: 0; } }
+  @keyframes logLines { 0%, 62% { opacity: 0; } 66%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes logArrow { 0%, 42% { opacity: 0; } 45%, 82% { opacity: 1; } 86%, 100% { opacity: 0; } }
+  @keyframes logFocus { 0%, 15% { opacity: 0; } 18%, 82% { opacity: 1; } 87%, 100% { opacity: 0; } }
+  @keyframes logDim2 { 0%, 15% { opacity: 1; } 18%, 82% { opacity: 0.32; } 87%, 100% { opacity: 1; } }
+  @keyframes logPrompt { 0%, 66% { opacity: 0; } 70%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes attHdr { 0%, 25% { opacity: 0; } 27%, 96% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes attWin { 0%, 28% { opacity: 0; } 30%, 96% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes attArrow { 0%, 29% { opacity: 0; } 31%, 79% { opacity: 1; } 81%, 100% { opacity: 0; } }
+  /* CSS twin of the old SMIL animateTransform: the rolling epoch window. Held
+     values give discrete jumps (one new line at a time), on the same CSS clock
+     as every other animation here so the terminal and queue stay in sync. */
+  @keyframes attRoll {
+    0%, 30.9% { transform: translateY(0); }
+    31%, 36.9% { transform: translateY(-19px); }
+    37%, 42.9% { transform: translateY(-38px); }
+    43%, 48.9% { transform: translateY(-57px); }
+    49%, 54.9% { transform: translateY(-76px); }
+    55%, 60.9% { transform: translateY(-95px); }
+    61%, 66.9% { transform: translateY(-114px); }
+    67%, 72.9% { transform: translateY(-133px); }
+    73%, 81.9% { transform: translateY(-152px); }
+    82%, 100% { transform: translateY(-171px); }
+  }
+  @keyframes attRun { 0%, 79% { opacity: 1; } 81%, 100% { opacity: 0; } }
+  @keyframes attDone { 0%, 79% { opacity: 0; } 81%, 100% { opacity: 1; } }
+  @keyframes tgTask { 0%, 33% { opacity: 0; } 36%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes tgPending { 0%, 30% { opacity: 0; } 33%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes tgRoute { 0%, 48% { opacity: 0; } 52%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes tgW2Idle { 0%, 50% { opacity: 1; } 54%, 100% { opacity: 0; } }
+  @keyframes typeList { 0% { transform: translateX(0); } 30% { transform: translateX(91px); } 100% { transform: translateX(91px); } }
+  @keyframes caretList { 0%, 1% { opacity: 0; } 2%, 30% { opacity: 1; } 32%, 100% { opacity: 0; } }
+  @keyframes typeLog { 0% { transform: translateX(0); } 13% { transform: translateX(132px); } 100% { transform: translateX(132px); } }
+  @keyframes caretLog { 0%, 1% { opacity: 0; } 2%, 33% { opacity: 1; } 35%, 100% { opacity: 0; } }
+  @keyframes typeAtt { 0% { transform: translateX(0); } 24% { transform: translateX(196px); } 100% { transform: translateX(196px); } }
+  @keyframes caretAtt { 0%, 1% { opacity: 0; } 2%, 24% { opacity: 1; } 26%, 100% { opacity: 0; } }
+  @keyframes typeTag1 { 0% { transform: translateX(0); } 10% { transform: translateX(122px); } 100% { transform: translateX(122px); } }
+  @keyframes typeTag2 { 0%, 10% { transform: translateX(0); } 20% { transform: translateX(164px); } 100% { transform: translateX(164px); } }
+  @keyframes typeTag3 { 0%, 20% { transform: translateX(0); } 30% { transform: translateX(164px); } 100% { transform: translateX(164px); } }
+
+  /* snapshot figure (9s loop): git status -> nextask enqueue --snapshot ->
+     capture + push to remote -> queue pending -> worker claims and clones.
+     Reconstructed from the design's animation names (the export omitted the
+     keyframes); tuned to the same reveal conventions as the other figures. */
+  @keyframes typeGit { 0% { transform: translateX(0); } 10% { transform: translateX(98px); } 100% { transform: translateX(98px); } }
+  @keyframes caretGit { 0%, 1% { opacity: 0; } 2%, 10% { opacity: 1; } 12%, 100% { opacity: 0; } }
+  @keyframes gitOut1 { 0%, 11% { opacity: 0; } 13%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes gitOut2 { 0%, 13% { opacity: 0; } 15%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes nxCmd { 0%, 17% { opacity: 0; } 19%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes typeNx1 { 0%, 18% { transform: translateX(0); } 30% { transform: translateX(256px); } 100% { transform: translateX(256px); } }
+  @keyframes caretNx1 { 0%, 18% { opacity: 0; } 19%, 30% { opacity: 1; } 32%, 100% { opacity: 0; } }
+  @keyframes typeNx2 { 0%, 30% { transform: translateX(0); } 37% { transform: translateX(106px); } 100% { transform: translateX(106px); } }
+  @keyframes caretNx2 { 0%, 30% { opacity: 0; } 31%, 37% { opacity: 1; } 39%, 100% { opacity: 0; } }
+  @keyframes snCap { 0%, 39% { opacity: 0; } 41%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes snPush { 0%, 45% { opacity: 0; } 47%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes snPending { 0%, 49% { opacity: 0; } 51%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes snChipP { 0%, 50% { opacity: 0; } 52%, 64% { opacity: 1; } 66%, 100% { opacity: 0; } }
+  @keyframes snChipR { 0%, 64% { opacity: 0; } 66%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes snClone { 0%, 64% { opacity: 0; } 66%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
+  @keyframes snW1Idle { 0%, 64% { opacity: 1; } 66%, 100% { opacity: 0; } }
+  @keyframes travelD { 0%, 40% { offset-distance: 0%; opacity: 0; } 42% { opacity: 1; } 52% { offset-distance: 100%; opacity: 1; } 53%, 100% { offset-distance: 100%; opacity: 0; } }
+  @keyframes travelC { 0%, 65% { offset-distance: 0%; opacity: 0; } 67% { opacity: 1; } 79% { offset-distance: 100%; opacity: 1; } 80%, 100% { offset-distance: 100%; opacity: 0; } }
+  /* Worker edge starts marching only once the travelC dots have fanned in (79%). */
+  @keyframes snWorkEdge { 0%, 79% { opacity: 0; } 81%, 96% { opacity: 1; } 98%, 100% { opacity: 0; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nxt-ex .fig svg * {
+      animation: none !important;
+    }
+  }
+</style>

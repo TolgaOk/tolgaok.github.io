@@ -1,0 +1,178 @@
+---
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import portrait from "@/assets/portrait.jpg";
+
+const posts = (await getCollection("posts", ({ data }) => !data.draft)).sort(
+  (a, b) => b.data.date.valueOf() - a.data.date.valueOf(),
+);
+
+// Preferred section order; any other kind found in posts is appended.
+const kindOrder = ["research", "software"];
+const kinds = [
+  ...kindOrder.filter((kind) => posts.some((post) => post.data.kind === kind)),
+  ...new Set(
+    posts.map((post) => post.data.kind).filter((kind) => !kindOrder.includes(kind)),
+  ),
+];
+
+const publications = [
+  {
+    title: "Scalable Kernel Inverse Optimization",
+    venue: "NeurIPS 2024",
+    authors:
+      "Youyuan Long, Tolga Ok, Pedro Zattoni Scroccaro, and Peyman Mohajerin Esfahani",
+    links: [{ name: "OpenReview", url: "https://openreview.net/forum?id=Mktgayam7U" }],
+  },
+  {
+    title: "Offline Reinforcement Learning via Inverse Optimization",
+    venue: "Preprint 2024",
+    authors: "Ioannis Dimanidis, Tolga Ok, and Peyman Mohajerin Esfahani",
+    links: [
+      {
+        name: "PDF",
+        url: "https://www.dcsc.tudelft.nl/~mohajerin/Publications/journal/2024/RL_Inv.pdf",
+      },
+    ],
+  },
+  {
+    title: "Long-horizon Value Gradient Methods on Stiefel Manifold",
+    venue: "M.S. Thesis 2022 · Istanbul Technical University",
+    authors: "Tolga Ok",
+    links: [],
+  },
+];
+
+const links = [
+  { name: "GitHub", url: "https://github.com/TolgaOk", icon: "ri:github-line" },
+  {
+    name: "Scholar",
+    url: "https://scholar.google.com/citations?user=fUZamLEAAAAJ",
+    icon: "academicons:google-scholar",
+  },
+  { name: "Email", url: "mailto:T.Ok@tudelft.nl", icon: "ri:mail-line" },
+  // TODO: add CV link
+];
+
+const prefix = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : import.meta.env.BASE_URL + "/";
+
+const formatDate = (date: Date) =>
+  date.toLocaleDateString("en-US", { year: "numeric", month: "short" });
+---
+
+<BaseLayout
+  title="Tolga Ok"
+  description="Reinforcement learning, optimization, and their applications in robotics."
+>
+  <div
+    class="flex flex-col-reverse items-start gap-x-10 gap-y-6 sm:flex-row sm:items-center"
+  >
+    <div>
+      <h1>Hi, I'm Tolga</h1>
+
+      <p>
+        I am interested in reinforcement learning (RL), optimization, and their
+        applications in robotics. Currently, I am doing my PhD at the <a
+          href="https://www.tudelft.nl/me/over/afdelingen/delft-center-for-systems-and-control"
+          >Delft Center for Systems and Control (DCSC)</a
+        > at <a href="https://www.tudelft.nl/">TU Delft</a>, under the
+        supervision of <a href="https://www.dcsc.tudelft.nl/~mohajerin/"
+          >Peyman Mohajerin Esfahani</a
+        > and <a href="https://sites.google.com/view/aminkolarijani/home"
+          >Mohamad Amin Sharifi Kolarijani</a
+        >.
+      </p>
+    </div>
+    <Image
+      src={portrait}
+      alt="Portrait of Tolga Ok"
+      width={320}
+      class="not-prose aspect-[4/5] w-40 shrink-0 rounded-2xl object-cover sm:w-44"
+    />
+  </div>
+
+  <div class="not-prose flex flex-row flex-wrap gap-2">
+    {
+      links.map((link) => (
+        <a
+          href={link.url}
+          class="flex flex-row items-center gap-2 rounded-full bg-zinc-800 px-5 py-2 text-lg text-white hover:bg-black hover:no-underline dark:bg-zinc-200 dark:text-zinc-900 dark:hover:bg-zinc-50"
+        >
+          {link.icon && <Icon name={link.icon} />}
+          <span>{link.name}</span>
+        </a>
+      ))
+    }
+  </div>
+
+  {
+    kinds.map((kind) => (
+      <section>
+        <h2 id={kind}>{kind.charAt(0).toUpperCase() + kind.slice(1)}</h2>
+        <ul class="list-none pl-0">
+          {posts
+            .filter((post) => post.data.kind === kind)
+            .map((post) => (
+              <li class="flex flex-row items-center gap-4 pl-0">
+                {post.data.image ? (
+                  <a
+                    href={`${prefix}${post.data.kind}/${post.id}/`}
+                    class="not-prose shrink-0"
+                  >
+                    <Image
+                      src={post.data.image}
+                      alt={post.data.title}
+                      width={256}
+                      class="size-16 rounded-xl object-cover"
+                    />
+                  </a>
+                ) : (
+                  <div class="size-16 shrink-0 rounded-xl bg-zinc-100 dark:bg-zinc-800" />
+                )}
+                <div>
+                  <a href={`${prefix}${post.data.kind}/${post.id}/`}>
+                    {post.data.title}
+                  </a>
+                  <span class="text-base text-zinc-500 dark:text-zinc-400">
+                    {" · "}
+                    {formatDate(post.data.date)}
+                  </span>
+                  {post.data.description && <> · {post.data.description}</>}
+                </div>
+              </li>
+            ))}
+        </ul>
+      </section>
+    ))
+  }
+
+  <section>
+    <h2 id="publications">Publications</h2>
+    <ul>
+      {
+        publications.map((publication) => (
+          <li>
+            {publication.title}
+            <span class="text-base text-zinc-500 dark:text-zinc-400">
+              {" · "}
+              {publication.venue}
+            </span>
+            {publication.links.map((link) => (
+              <a class="text-base" href={link.url}>
+                {link.name}
+              </a>
+            ))}
+            <div class="text-base text-zinc-500 dark:text-zinc-400">
+              {publication.authors}
+            </div>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+</BaseLayout>
