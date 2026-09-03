@@ -49,6 +49,125 @@ const toggleId = `nxt-tgl-${names.join("-")}`;
 </div>
 
 <style>
+  /* The exported example SVGs use a shared light palette. Since they are
+     injected inline, presentation attributes can be remapped here without
+     maintaining a second set of SVG files. */
+  .nxt-ex {
+    --nxt-card: var(--color-white);
+    --nxt-border: var(--color-zinc-200);
+    --nxt-ink: var(--color-zinc-800);
+    --nxt-muted: var(--color-zinc-600);
+    --nxt-faint: var(--color-zinc-400);
+    --nxt-terminal: var(--color-zinc-100);
+    --nxt-row: var(--color-zinc-100);
+    --nxt-row-highlight: #eef4fc;
+    --nxt-pending: #9a6700;
+    --nxt-pending-soft: #e3c886;
+    --nxt-running: var(--color-blue-600);
+    --nxt-running-soft: #a3c7f0;
+    --nxt-done: #1a7f37;
+    --nxt-done-soft: #9fd2ae;
+    --nxt-pg-filter: none;
+    --nxt-pg-opacity: 0.62;
+  }
+
+  :global(html[data-theme="dark"]) .nxt-ex {
+    --nxt-card: var(--color-zinc-800);
+    --nxt-border: var(--color-zinc-700);
+    --nxt-ink: var(--color-zinc-200);
+    --nxt-muted: var(--color-zinc-400);
+    --nxt-faint: var(--color-zinc-500);
+    --nxt-terminal: var(--color-zinc-800);
+    --nxt-row: var(--color-zinc-700);
+    --nxt-row-highlight: #1c2635;
+    --nxt-pending: #d29922;
+    --nxt-pending-soft: #6b5618;
+    --nxt-running: var(--color-blue-400);
+    --nxt-running-soft: #234a75;
+    --nxt-done: #3fb950;
+    --nxt-done-soft: #1f5b2d;
+    --nxt-pg-filter: invert(1);
+    --nxt-pg-opacity: 0.58;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :global(html[data-theme="device"]) .nxt-ex {
+      --nxt-card: var(--color-zinc-800);
+      --nxt-border: var(--color-zinc-700);
+      --nxt-ink: var(--color-zinc-200);
+      --nxt-muted: var(--color-zinc-400);
+      --nxt-faint: var(--color-zinc-500);
+      --nxt-terminal: var(--color-zinc-800);
+      --nxt-row: var(--color-zinc-700);
+      --nxt-row-highlight: #1c2635;
+      --nxt-pending: #d29922;
+      --nxt-pending-soft: #6b5618;
+      --nxt-running: var(--color-blue-400);
+      --nxt-running-soft: #234a75;
+      --nxt-done: #3fb950;
+      --nxt-done-soft: #1f5b2d;
+      --nxt-pg-filter: invert(1);
+      --nxt-pg-opacity: 0.58;
+    }
+  }
+
+  .nxt-ex .fig :global([fill="#fff"]) {
+    fill: var(--nxt-card);
+  }
+  .nxt-ex .fig :global([fill="#f6f8fa"]) {
+    fill: var(--nxt-terminal);
+  }
+  .nxt-ex .fig :global(rect[rx="6"][fill="#f6f8fa"]),
+  .nxt-ex .fig :global(rect[rx="7"][fill="#f6f8fa"]) {
+    fill: var(--nxt-row);
+  }
+  .nxt-ex .fig :global([fill="#eef4fc"]) {
+    fill: var(--nxt-row-highlight);
+  }
+  .nxt-ex .fig :global([stroke="#d8dde4"]) {
+    stroke: var(--nxt-border);
+  }
+  .nxt-ex .fig :global([fill="#1a1f27"]) {
+    fill: var(--nxt-ink);
+  }
+  .nxt-ex .fig :global([fill="#57606a"]) {
+    fill: var(--nxt-muted);
+  }
+  .nxt-ex .fig :global([fill="#8c959f"]) {
+    fill: var(--nxt-faint);
+  }
+  .nxt-ex .fig :global([stroke="#8c959f"]) {
+    stroke: var(--nxt-faint);
+  }
+  .nxt-ex .fig :global([fill="#0969da"]) {
+    fill: var(--nxt-running);
+  }
+  .nxt-ex .fig :global([stroke="#0969da"]) {
+    stroke: var(--nxt-running);
+  }
+  .nxt-ex .fig :global([stroke="#a3c7f0"]) {
+    stroke: var(--nxt-running-soft);
+  }
+  .nxt-ex .fig :global([fill="#1a7f37"]) {
+    fill: var(--nxt-done);
+  }
+  .nxt-ex .fig :global([stroke="#1a7f37"]) {
+    stroke: var(--nxt-done);
+  }
+  .nxt-ex .fig :global([stroke="#9fd2ae"]) {
+    stroke: var(--nxt-done-soft);
+  }
+  .nxt-ex .fig :global([fill="#9a6700"]) {
+    fill: var(--nxt-pending);
+  }
+  .nxt-ex .fig :global([stroke="#e3c886"]) {
+    stroke: var(--nxt-pending-soft);
+  }
+  .nxt-ex .fig :global(.pgicon) {
+    filter: var(--nxt-pg-filter);
+    opacity: var(--nxt-pg-opacity);
+  }
+
   .nxt-ex .fig {
     display: flex;
     justify-content: center;
