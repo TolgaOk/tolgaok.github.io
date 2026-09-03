@@ -85,7 +85,7 @@
   <!-- ================= queue ================= -->
   <g>
     <rect x="420" y="110" width="215" height="250" rx="10" fill="var(--card)" stroke="var(--border)"></rect>
-    <text x="436" y="134" font-size="12.5" font-weight="600" fill="var(--ink)">queue</text>
+    <text x="436" y="134" class="mono" font-size="12.5" font-weight="600" fill="var(--ink)">queue</text>
     <image class="pgicon" x="555" y="122.5" width="13" height="13" href="data:image/png;base64,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" preserveAspectRatio="xMidYMid meet"></image>
     <text x="619" y="134" text-anchor="end" class="mono" font-size="9.5" fill="var(--faint)">postgres</text>
     <line x1="420" y1="146" x2="635" y2="146" stroke="var(--border)"></line>
@@ -132,7 +132,7 @@
   <g>
     <rect x="705" y="110" width="215" height="104" rx="10" fill="var(--card)" stroke="var(--border)"></rect>
     <rect class="worker-glow" x="705" y="110" width="215" height="104" rx="10" fill="none" stroke="var(--running)" stroke-width="1.5" stroke-dasharray="8 6" opacity="0"></rect>
-    <text x="721" y="136" font-size="12.5" font-weight="600" fill="var(--ink)">worker-1</text>
+    <text x="721" y="136" class="mono" font-size="12.5" font-weight="600" fill="var(--ink)">worker-1</text>
     <text class="worker-run mono" x="795" y="136" font-size="9.5" fill="var(--faint)" opacity="0">a3f9c2</text>
     <circle cx="898" cy="131" r="3.5" fill="var(--done)"></circle>
     <circle class="pulse" cx="898" cy="131" r="3.5" fill="none" stroke="var(--done)"></circle>
@@ -146,7 +146,7 @@
   <g>
     <rect x="705" y="256" width="215" height="104" rx="10" fill="var(--card)" stroke="var(--border)"></rect>
     <rect class="worker-busy" x="705" y="256" width="215" height="104" rx="10" fill="none" stroke="var(--running)" stroke-width="1.5" stroke-dasharray="8 6"></rect>
-    <text x="721" y="282" font-size="12.5" font-weight="600" fill="var(--ink)">worker-2</text>
+    <text x="721" y="282" class="mono" font-size="12.5" font-weight="600" fill="var(--ink)">worker-2</text>
     <text x="795" y="282" class="mono" font-size="9.5" fill="var(--faint)">c4a811</text>
     <circle cx="898" cy="277" r="3.5" fill="var(--done)"></circle>
     <circle class="pulse pulse2" cx="898" cy="277" r="3.5" fill="none" stroke="var(--done)"></circle>

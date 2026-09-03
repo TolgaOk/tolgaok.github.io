@@ -26,7 +26,7 @@
       </g>
       
       <rect x="470" y="30" width="218" height="176" rx="10" fill="#fff" stroke="#d8dde4"></rect>
-      <text x="486" y="54" font-size="12.5" font-weight="600" fill="#1a1f27">queue</text>
+      <text x="486" y="54" font-family="var(--font-mono, monospace)" font-size="12.5" font-weight="600" fill="#1a1f27">queue</text>
       <text x="672" y="54" text-anchor="end" font-family="&#39;JetBrains Mono&#39;,monospace" font-size="9.5" fill="#8c959f">postgres</text>
       <line x1="470" y1="66" x2="688" y2="66" stroke="#d8dde4"></line>
       <g font-family="&#39;JetBrains Mono&#39;,monospace">
