@@ -21,13 +21,13 @@ type Link = {
 
 interface Props {
   title?: string;
-  authors: Author[];
+  authors?: Author[];
   conference?: string;
   notes?: Note[];
   links?: Link[];
 }
 
-const { title, authors, conference, notes, links } = Astro.props;
+const { title, authors = [], conference, notes, links } = Astro.props;
 
 const hasBackground = Astro.slots.has("background");
 ---
@@ -58,30 +58,32 @@ const hasBackground = Astro.slots.has("background");
     <h1 class="my-0 text-5xl font-medium">
       {Astro.slots.has("title") ? <slot name="title" /> : title}
     </h1>
-    <div class="flex flex-row flex-wrap justify-center gap-x-8 gap-y-4">
-      {
-        authors.map((author) => (
-          <div class="flex flex-col items-center text-center">
-            <div class="flex flex-row text-xl">
-              {author.url ? (
-                <a class:list={[hasBackground && "not-prose text-blue-200 hover:text-blue-100 underline decoration-dashed underline-offset-4 hover:decoration-solid"]} href={author.url}>{author.name}</a>
-              ) : (
-                author.name
-              )}
-              {author.notes && (
-                <sup class="text-xl">
-                  {author.notes.map(
-                    (note, index, array) =>
-                      note + (index < array.length - 1 ? "," : ""),
-                  )}
-                </sup>
-              )}
+    {
+      authors.length > 0 && (
+        <div class="flex flex-row flex-wrap justify-center gap-x-8 gap-y-4">
+          {authors.map((author) => (
+            <div class="flex flex-col items-center text-center">
+              <div class="flex flex-row text-xl">
+                {author.url ? (
+                  <a class:list={[hasBackground && "not-prose text-blue-200 hover:text-blue-100 underline decoration-dashed underline-offset-4 hover:decoration-solid"]} href={author.url}>{author.name}</a>
+                ) : (
+                  author.name
+                )}
+                {author.notes && (
+                  <sup class="text-xl">
+                    {author.notes.map(
+                      (note, index, array) =>
+                        note + (index < array.length - 1 ? "," : ""),
+                    )}
+                  </sup>
+                )}
+              </div>
+              {author.institution && <div>{author.institution}</div>}
             </div>
-            {author.institution && <div>{author.institution}</div>}
-          </div>
-        ))
-      }
-    </div>
+          ))}
+        </div>
+      )
+    }
     {conference && <div>{conference}</div>}
     {
       notes && (

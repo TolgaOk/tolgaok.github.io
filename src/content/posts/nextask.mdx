@@ -1,6 +1,6 @@
 ---
 title: nextask
-description: A distributed task queue with live log streaming and git-based reproducibility snapshots.
+description: A distributed task queue with live log streaming and Git snapshots for reproducible runs.
 date: 2026-03-30
 kind: software
 image: ../../assets/nextask/nextask-mark.svg
@@ -19,7 +19,6 @@ import lockupLight from "@/assets/nextask/nextask-lockup-light.svg";
 import lockupDark from "@/assets/nextask/nextask-lockup-dark.svg";
 
 <Header
-  authors={[{ name: "Tolga Ok", url: "https://tolgaok.github.io" }]}
   links={[
     {
       name: "Code",
@@ -49,29 +48,68 @@ import lockupDark from "@/assets/nextask/nextask-lockup-dark.svg";
 
 <HighlightedSection>
 
-## Overview
+## TL;DR
 
-Running a batch of jobs across a few machines usually means babysitting SSH sessions and losing track of what ran where. **nextask** is a small distributed task queue that keeps the bookkeeping: you enqueue commands from one place, workers claim them atomically, and heartbeats catch the ones that stall. Each task can carry a git snapshot of the exact tree it ran from, so any run stays reproducible, which makes it a natural fit for ML sweeps and agent-driven workflows.
+Running a batch of jobs across a few machines can be a pain. You have to manage several SSH sessions, keep track of the logs, and synchronize the results.
+`nextask` is built to handle it for you.
+It is a lightweight distributed task queue written in Go.
+It makes remote jobs feel local while delegating each task to the next available matching worker. It can also snapshot your code, including local changes, for reproducibility.
 
 </HighlightedSection>
 
+
+## Background
+
+During the first year of my PhD, I collaborated on a research project that required us to run many experiments within a short rebuttal period.
+We used whatever compute we had, including local machines and a shared SLURM cluster.
+During that period, we managed to obtain the results we desperately needed, but only after many messy runs.
+
+That review process ended in rejection. We later submitted the paper again and waited almost a year for a decision. Apparently, it had been lost midway through the process. After about eight months, the paper was assigned to a new area chair, and the entire review process started over.
+
+Once the reviews finally arrived, the reviewers asked for more experiments, as expected. I dug into the nearly 18-month-old codebase and tried to recover the code and results from the original runs. The whole setup was a mess. We had to rerun the experiments and could not fully reproduce the results we had reported in the paper. Fortunately, after I spent far more time than I should have, we produced the additional results and the paper was accepted.
+
+`nextask` was born out of this experience.
+It provides reproducible, automated runtime management by keeping logs, results, and the code used to generate them in a single persistent location. The following sections explain how it works and describe some common use cases.
+
 ## How it works
+
+
+`nextask` has three main components. The **CLI** runs on the local machine, the **queue** ideally runs on a persistent, network-accessible host, and the **workers** execute tasks.
+The diagram below shows how these components fit together.
 
 <Wide>
   <Figure>
     <NextaskDiagram slot="figure" />
     <Fragment slot="caption">
-      One task through its lifecycle: (1) the CLI enqueues it into the
+      A task through its lifecycle: (1) the CLI enqueues it into the
       Postgres-backed queue, (2) `--snapshot` pushes the working tree to the
-      git remote, (3) a matching worker claims it atomically, and (4) logs
-      stream back to the attached client live. Green dots are worker
-      heartbeats; the status chip moves from pending to running to completed.
+      remote Git repository, (3) a matching worker claims it atomically, and
+      (4) logs stream live to the attached client. Green dots indicate worker
+      heartbeats, and the status chip moves from pending to running to completed.
     </Fragment>
   </Figure>
 </Wide>
 
-## Commands
+The **CLI** lets us enqueue, list, monitor, and inspect logs for tasks.
+Before looking at individual commands, let's walk through an example of how it works once everything is set up.
 
+Let's begin with a project. Crucially, it must be a **Git repository**.
+Suppose we want to delegate a task to an available worker running on a powerful GPU server, a remote workstation, or a production server to which we have secure access.
+To run the task on a worker, enqueue it from the project directory:
+```sh title="~/project" frame="terminal"
+nextask enqueue "python script.py"
+```
+This adds the task to the queue. When a matching worker becomes available, it runs the task and streams the logs back to the database.
+To follow the task as if it were running locally, add the `--attach` flag:
+
+```sh title="~/project" frame="terminal"
+nextask enqueue "python script.py" --attach
+```
+This streams the logs to your terminal in real time while also storing them in the database.
+
+### Commands
+
+Here, we cover some of the basic commands in `nextask`.
 Each command touches only the part of the system it needs.
 
 <Tabs defaultValue="list">
@@ -83,44 +121,110 @@ Each command touches only the part of the system it needs.
   </TabsList>
     <TabsContent value="list">
 
-`nextask list` reads the current tasks straight from the queue, with each one's status and the worker holding it.
+`nextask list` reads the current tasks directly from the queue and shows each task's status and the worker that claimed it.
 
 <NextaskFigure names={["list"]} />
 
     </TabsContent>
     <TabsContent value="log">
 
-`nextask log <id>` prints a task's buffered output and returns; flip `--attach` to follow it live, streaming each new line until the task exits.
+`nextask log <id>` prints a task's buffered output and exits. Add `--attach` to stream new output until the task finishes.
 
 <NextaskFigure names={["log", "attach"]} toggle="--attach" />
 
     </TabsContent>
     <TabsContent value="tag">
 
-Tags route work: enqueuing with `--tag image=pytorch` sends the task only to a worker whose filter matches.
+Tags route tasks to matching workers. For example, enqueuing with `--tag image=pytorch` sends a task only to a worker with a matching filter.
 
 <NextaskFigure names={["tag"]} />
 
     </TabsContent>
     <TabsContent value="snapshot">
 
-`--snapshot` captures the working tree (including uncommitted changes) and pushes it to a git remote, so the worker clones the exact code that produced the run.
+`--snapshot` captures the working tree, including uncommitted changes, and pushes it to a remote Git repository so the worker can clone the exact code for the run.
+Each snapshot is tagged with the task ID and pushed as a separate branch to the remote repository configured in `nextask`.
+No snapshot branch is created in the local repository.
 
 <NextaskFigure names={["snapshot"]} />
 
     </TabsContent>
   </Tabs>
 
+
+#### Workers
+
+You can view registered workers from the CLI or register one on the current machine with:
+
+```sh
+nextask worker
+```
+
+- `--filter` lets the worker accept only tasks with a matching tag value.
+- `--exit-if-idle <time>` stops the worker after being idle for `<time>`.
+- `--once` stops the worker after the first task.
+
+To start a worker that accepts only tasks matching `image=pytorch gpu=a100` and exits after one hour of idleness, run:
+```sh
+nextask worker --filter image=pytorch gpu=a100 --exit-if-idle 1h
+```
+
+Use the following commands to manage workers on your local machine:
+
+```sh
+nextask worker list                      # list workers
+nextask worker stop <workerId>           # stop worker
+```
+
+#### Tasks
+
+The remaining commands cover task management and monitoring.
+
+```sh
+nextask list --status running --tag sweep=exp3          # list & filter tasks
+nextask log <taskId> --attach                           # stream live output
+nextask show <taskId>                                   # task details
+nextask cancel <taskId>                                 # cancel task
+```
+
+
 ## Agent-ready
 
-nextask is agent ready by design. Install the [skills](https://github.com/TolgaOk/nextask/tree/main/skills) to let agents set up services, deploy workers, and manage tasks:
+`nextask` is agent-ready by design. Its [skills](https://github.com/TolgaOk/nextask/tree/main/skills) guide agents through setting up services such as Postgres, deploying workers, and managing tasks.
+They prompt you for preferences with multiple-choice questions.
+
+To install the skills, run this command in your agent directory:
 
 ```sh
 npx skills add https://github.com/TolgaOk/nextask/skills
 ```
 
+### Use cases
+
+In agentic workflows, especially those involving sub-agents, several tasks often run in parallel.
+This can lead to resource contention and even freeze the system.
+`nextask` handles this by queuing tasks and dispatching them as matching workers become available, even when the local machine is the only worker.
+Agents can monitor tasks, be awakened when a task finishes, and easily access the results.
+
+A common use case for `nextask` is running a batch of tasks, such as a hyperparameter sweep, and waiting for them to finish.
+Agents can wait for all tasks to finish or just the first one.
+The following example runs a hyperparameter sweep:
+```sh
+for lr in 0.1 0.01 0.001; do
+  nextask enqueue "python train.py --lr $lr" --snapshot --tag exp=sweep,lr=$lr
+done
+
+nextask wait --tag exp=sweep        # block until all `exp=sweep` tasks are finished
+```
+
+The final command wakes the agent only after all tasks have finished.
+When an agent enqueues long-running tasks, you and other agents can independently monitor their progress, stream their logs, check their status, and track their results without interrupting the submitting agent.
+
+
+
 ## Install
 
+To install `nextask`, run:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TolgaOk/nextask/main/install | bash
 ```
