@@ -51,7 +51,8 @@ import nextaskLogo from "@/assets/nextask/nextask-mark.svg";
 Running a batch of jobs across a few machines can be a pain. You have to manage several SSH sessions, keep track of the logs, and synchronize the results.
 `nextask` is built to handle it for you.
 It is a lightweight distributed task queue written in Go.
-It makes remote jobs feel local while delegating each task to the next available matching worker. It can also snapshot your code, including local changes, for reproducibility.
+`nextask` lets you locally run commands as you would on your machine, while under the hood delegating each run to the next available worker.
+It can also snapshot your code, upload run artifacts, and store the logs, for maximum reproducibility.
 
 </HighlightedSection>
 
@@ -80,7 +81,7 @@ The diagram below shows how these components fit together.
     <NextaskDiagram slot="figure" />
     <Fragment slot="caption">
       A task through its lifecycle: (1) the CLI enqueues it into the
-      Postgres-backed queue, (2) `--snapshot` pushes the working tree to the
+      Postgres-backed queue, (2) `--with git` pushes the working tree to the
       remote Git repository, (3) a matching worker claims it atomically, and
       (4) logs stream live to the attached client. Green dots indicate worker
       heartbeats, and the status chip moves from pending to running to completed.
@@ -115,7 +116,7 @@ Each command touches only the part of the system it needs.
     <TabsTrigger value="list" class="font-mono">list</TabsTrigger>
     <TabsTrigger value="log" class="font-mono">log</TabsTrigger>
     <TabsTrigger value="tag" class="font-mono">{"--tag"}</TabsTrigger>
-    <TabsTrigger value="snapshot" class="font-mono">{"--snapshot"}</TabsTrigger>
+    <TabsTrigger value="snapshot" class="font-mono">{"--with git"}</TabsTrigger>
   </TabsList>
     <TabsContent value="list">
 
@@ -140,7 +141,7 @@ Tags route tasks to matching workers. For example, enqueuing with `--tag image=p
     </TabsContent>
     <TabsContent value="snapshot">
 
-`--snapshot` captures the working tree, including uncommitted changes, and pushes it to a remote Git repository so the worker can clone the exact code for the run.
+`--with git` captures the working tree, including uncommitted changes, and pushes it to a remote Git repository so the worker can clone the exact code for the run.
 Each snapshot is tagged with the task ID and pushed as a separate branch to the remote repository configured in `nextask`.
 No snapshot branch is created in the local repository.
 
@@ -209,7 +210,7 @@ Agents can wait for all tasks to finish or just the first one.
 The following example runs a hyperparameter sweep:
 ```sh
 for lr in 0.1 0.01 0.001; do
-  nextask enqueue "python train.py --lr $lr" --snapshot --tag exp=sweep,lr=$lr
+  nextask enqueue "python train.py --lr $lr" --with git --tag exp=sweep,lr=$lr
 done
 
 nextask wait --tag exp=sweep        # block until all `exp=sweep` tasks are finished
