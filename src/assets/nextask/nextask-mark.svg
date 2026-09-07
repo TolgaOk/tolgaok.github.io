@@ -8,24 +8,24 @@
 >
   <title>nextask</title>
   <defs>
-    <radialGradient id="background" cx="60" cy="60" r="82" gradientUnits="userSpaceOnUse">
+    <linearGradient id="background" x1="0" y1="0" x2="120" y2="120" gradientUnits="userSpaceOnUse">
       <stop stop-color="#22d3ee" />
       <stop offset="0.55" stop-color="#159bd1" />
       <stop offset="1" stop-color="#0851b3" />
-    </radialGradient>
+    </linearGradient>
   </defs>
 
   <rect width="120" height="120" rx="28" fill="url(#background)" />
-  <text
-    x="60"
-    y="79"
-    text-anchor="middle"
-    fill="#ffffff"
-    font-family="ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace"
-    font-size="54"
-    font-weight="700"
-    letter-spacing="-2"
+  <!-- Adapted from Lucide's terminal icon; see lucide-LICENSE.txt. -->
+  <g
+    transform="translate(24 24) scale(3)"
+    fill="none"
+    stroke="#ffffff"
+    stroke-width="3"
+    stroke-linecap="round"
+    stroke-linejoin="round"
   >
-    &gt;n
-  </text>
+    <path d="m4 17 6-6-6-6" />
+    <path d="M12 19h8" />
+  </g>
 </svg>
