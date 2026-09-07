@@ -11,6 +11,7 @@ import react from "@astrojs/react";
 
 import astroExpressiveCode from "astro-expressive-code";
 import { unified } from "@astrojs/markdown-remark";
+import { pluginIPython } from "./src/plugins/ipython";
 
 // https://astro.build/config
 export default defineConfig({
@@ -36,13 +37,40 @@ export default defineConfig({
   integrations: [
     icon(),
     astroExpressiveCode({
+      plugins: [pluginIPython()],
+      customizeTheme: (theme) => {
+        const dark = theme.type === "dark";
+        theme.colors["tab.activeBackground"] = dark ? "#22252A" : "#F6F7F8";
+        theme.colors["editorGroupHeader.tabsBackground"] = dark
+          ? "#2D3239"
+          : "#E6E9ED";
+        theme.colors["editorGroupHeader.tabsBorder"] = dark
+          ? "#3B414A"
+          : "#D7DCE2";
+        theme.colors["titleBar.activeBackground"] = dark
+          ? "#2D3239"
+          : "#E6E9ED";
+        theme.settings.push(
+          {
+            scope: ["meta.function-call.generic.python"],
+            settings: { foreground: dark ? "#B392F0" : "#6F42C1" },
+          },
+          {
+            scope: ["meta.attribute.python"],
+            settings: { foreground: dark ? "#79B8FF" : "#005CC5" },
+          },
+        );
+      },
       styleOverrides: {
         borderRadius: "0.5rem",
-        borderWidth: "0",
+        borderWidth: "1px",
+        borderColor: ({ theme }) =>
+          theme.type === "dark" ? "#3B414A" : "#D7DCE2",
         codeBackground: ({ theme }) =>
-          `var(--color-zinc-${theme.type === "dark" ? "800" : "200"})`,
+          theme.type === "dark" ? "#22252A" : "#F6F7F8",
         frames: {
           shadowColor: "transparent",
+          editorActiveTabIndicatorHeight: "0px",
         },
       },
       themeCssSelector: (theme) =>
