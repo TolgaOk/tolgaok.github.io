@@ -1,6 +1,17 @@
 import { promises as fs } from "fs";
 import { pdf } from "pdf-to-img";
-import sizeOf from "image-size";
+
+function getPngDimensions(image: Buffer) {
+  const pngSignature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
+  if (image.length < 24 || !image.subarray(0, 8).equals(pngSignature)) {
+    throw new Error("Expected pdf-to-img to return a PNG image");
+  }
+
+  return {
+    width: image.readUInt32BE(16),
+    height: image.readUInt32BE(20),
+  };
+}
 
 export async function renderPDF(inputFilePath: string): Promise<ImageMetadata> {
   const inputFileName = inputFilePath.split("/").pop();
@@ -14,10 +25,8 @@ export async function renderPDF(inputFilePath: string): Promise<ImageMetadata> {
   // Get the first page
   const image = await document.getPage(1);
 
-  // Get image dimensions using image-size (much lighter than sharp)
-  const dimensions = sizeOf(image);
-  const width = dimensions.width;
-  const height = dimensions.height;
+  const { width, height } = getPngDimensions(image);
+  await document.destroy();
 
   // Ensure directories exist before writing the file
   const outputDir = `./dist/_astro`;

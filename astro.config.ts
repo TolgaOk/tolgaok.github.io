@@ -10,6 +10,7 @@ import rehypeCitation from "rehype-citation";
 import react from "@astrojs/react";
 
 import astroExpressiveCode from "astro-expressive-code";
+import { unified } from "@astrojs/markdown-remark";
 
 // https://astro.build/config
 export default defineConfig({
@@ -18,17 +19,19 @@ export default defineConfig({
     plugins: [tailwindcss()],
   },
   markdown: {
-    remarkPlugins: [remarkMath],
-    rehypePlugins: [
-      rehypeKatex,
-      [
-        rehypeCitation,
-        {
-          bibliography: "bibliography.bib",
-          linkCitations: true,
-        },
+    processor: unified({
+      remarkPlugins: [remarkMath],
+      rehypePlugins: [
+        rehypeKatex,
+        [
+          rehypeCitation,
+          {
+            bibliography: "bibliography.bib",
+            linkCitations: true,
+          },
+        ],
       ],
-    ],
+    }),
   },
   integrations: [
     icon(),
