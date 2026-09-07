@@ -1,11 +1,31 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="120" height="120" role="img" aria-label="nextask">
-  
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 120"
+  width="120"
+  height="120"
+  role="img"
+  aria-label="nextask"
+>
+  <title>nextask</title>
   <defs>
-    <linearGradient id="nt" x1="16" y1="10" x2="104" y2="110" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#22d3ee"></stop>
-      <stop offset="1" stop-color="#0851b3"></stop>
-    </linearGradient>
+    <radialGradient id="background" cx="60" cy="60" r="82" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#22d3ee" />
+      <stop offset="0.55" stop-color="#159bd1" />
+      <stop offset="1" stop-color="#0851b3" />
+    </radialGradient>
   </defs>
-  <rect width="120" height="120" rx="28" fill="url(#nt)"></rect>
-  <text x="60" y="78" text-anchor="middle" font-family="&#39;Fira Code&#39;,&#39;Fira Mono&#39;,ui-monospace,monospace" font-size="48" font-weight="700" letter-spacing="1"><tspan fill="#e0fbff">❯</tspan><tspan fill="#ffffff">n</tspan></text>
+
+  <rect width="120" height="120" rx="28" fill="url(#background)" />
+  <text
+    x="60"
+    y="79"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace"
+    font-size="54"
+    font-weight="700"
+    letter-spacing="-2"
+  >
+    &gt;n
+  </text>
 </svg>
