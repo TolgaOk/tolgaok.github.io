@@ -1,0 +1,29 @@
+---
+import { Icon } from "astro-icon/components";
+
+interface Props {
+  title: string;
+  id?: string;
+}
+
+const { title, id } = Astro.props;
+---
+
+<aside
+  id={id}
+  aria-label={title}
+  class="my-8 rounded-r-md border-s-[3px] border-blue-600 bg-blue-50/60 px-5 py-4 text-base leading-relaxed text-zinc-700 dark:border-blue-400 dark:bg-blue-400/[0.08] dark:text-zinc-300"
+>
+  <div
+    class="not-prose mb-3 flex items-center gap-2 text-sm font-semibold text-blue-800 dark:text-blue-300"
+    aria-hidden="true"
+  >
+    <Icon name="ri:information-line" class="size-4 shrink-0" />
+    <span>{title}</span>
+  </div>
+  <div
+    class="[&>:first-child]:mt-0 [&>:last-child]:mb-0 [&>p]:my-0 [&>p+p]:mt-3"
+  >
+    <slot />
+  </div>
+</aside>
