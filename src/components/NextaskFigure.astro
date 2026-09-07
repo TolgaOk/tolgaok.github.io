@@ -5,6 +5,7 @@
 // elements reference the animation keyframes below by name, so the keyframes are
 // declared globally (Astro would otherwise rename scoped keyframes and break the
 // inline refs).
+import "./NextaskVisual.css";
 import listSvg from "@/assets/nextask/examples/nextask-list.svg?raw";
 import logSvg from "@/assets/nextask/examples/nextask-log.svg?raw";
 import attachSvg from "@/assets/nextask/examples/nextask-attach.svg?raw";
@@ -26,6 +27,12 @@ interface Props {
 
 const { names, toggle } = Astro.props;
 const toggleId = `nxt-tgl-${names.join("-")}`;
+// Match the 960-unit architecture canvas: every SVG unit gets the same scale.
+const figureStyle = (name: string) => {
+  const viewBox = SVGS[name].match(/viewBox="([^"]+)"/)?.[1].split(/\s+/);
+  const width = Number(viewBox?.[2]);
+  return `--nxt-figure-width: calc(var(--nxt-canvas-width) * ${width / 960})`;
+};
 ---
 
 <div class="nxt-ex">
@@ -39,78 +46,43 @@ const toggleId = `nxt-tgl-${names.join("-")}`;
           </span>
           <span class="lbl">{toggle}</span>
         </label>
-        <div class="fig fig-a" set:html={SVGS[names[0]]} />
-        <div class="fig fig-b" set:html={SVGS[names[1]]} />
+        <div class="fig fig-a" style={figureStyle(names[0])} set:html={SVGS[names[0]]} />
+        <div class="fig fig-b" style={figureStyle(names[1])} set:html={SVGS[names[1]]} />
       </div>
     ) : (
-      <div class="fig" set:html={SVGS[names[0]]} />
+      <div class="fig" style={figureStyle(names[0])} set:html={SVGS[names[0]]} />
     )
   }
 </div>
 
+<script>
+  const examples = document.querySelectorAll<SVGSVGElement>(".nxt-ex svg");
+  const visible = new WeakSet<SVGSVGElement>();
+  const reducedMotion = matchMedia("(prefers-reduced-motion: reduce)");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        const svg = entry.target as SVGSVGElement;
+        if (!entry.isIntersecting || entry.intersectionRatio < 0.15) {
+          visible.delete(svg);
+          continue;
+        }
+        if (visible.has(svg) || reducedMotion.matches) continue;
+        visible.add(svg);
+        const startTime = document.timeline.currentTime;
+        for (const animation of svg.getAnimations({ subtree: true })) {
+          animation.startTime = startTime;
+        }
+      }
+    },
+    { threshold: 0.15 },
+  );
+  void document.fonts.ready.then(() => {
+    for (const svg of examples) observer.observe(svg);
+  });
+</script>
+
 <style>
-  /* The exported example SVGs use a shared light palette. Since they are
-     injected inline, presentation attributes can be remapped here without
-     maintaining a second set of SVG files. */
-  .nxt-ex {
-    --nxt-card: var(--color-white);
-    --nxt-border: var(--color-zinc-200);
-    --nxt-ink: var(--color-zinc-800);
-    --nxt-muted: var(--color-zinc-600);
-    --nxt-faint: var(--color-zinc-400);
-    --nxt-terminal: var(--color-zinc-100);
-    --nxt-row: var(--color-zinc-100);
-    --nxt-row-highlight: #eef4fc;
-    --nxt-pending: #9a6700;
-    --nxt-pending-soft: #e3c886;
-    --nxt-running: var(--color-blue-600);
-    --nxt-running-soft: #a3c7f0;
-    --nxt-done: #1a7f37;
-    --nxt-done-soft: #9fd2ae;
-    --nxt-pg-filter: none;
-    --nxt-pg-opacity: 0.62;
-  }
-
-  :global(html[data-theme="dark"]) .nxt-ex {
-    --nxt-card: var(--color-zinc-800);
-    --nxt-border: var(--color-zinc-700);
-    --nxt-ink: var(--color-zinc-200);
-    --nxt-muted: var(--color-zinc-400);
-    --nxt-faint: var(--color-zinc-500);
-    --nxt-terminal: var(--color-zinc-800);
-    --nxt-row: var(--color-zinc-700);
-    --nxt-row-highlight: #1c2635;
-    --nxt-pending: #d29922;
-    --nxt-pending-soft: #6b5618;
-    --nxt-running: var(--color-blue-400);
-    --nxt-running-soft: #234a75;
-    --nxt-done: #3fb950;
-    --nxt-done-soft: #1f5b2d;
-    --nxt-pg-filter: invert(1);
-    --nxt-pg-opacity: 0.58;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :global(html[data-theme="device"]) .nxt-ex {
-      --nxt-card: var(--color-zinc-800);
-      --nxt-border: var(--color-zinc-700);
-      --nxt-ink: var(--color-zinc-200);
-      --nxt-muted: var(--color-zinc-400);
-      --nxt-faint: var(--color-zinc-500);
-      --nxt-terminal: var(--color-zinc-800);
-      --nxt-row: var(--color-zinc-700);
-      --nxt-row-highlight: #1c2635;
-      --nxt-pending: #d29922;
-      --nxt-pending-soft: #6b5618;
-      --nxt-running: var(--color-blue-400);
-      --nxt-running-soft: #234a75;
-      --nxt-done: #3fb950;
-      --nxt-done-soft: #1f5b2d;
-      --nxt-pg-filter: invert(1);
-      --nxt-pg-opacity: 0.58;
-    }
-  }
-
   .nxt-ex .fig :global([fill="#fff"]) {
     fill: var(--nxt-card);
   }
@@ -163,6 +135,14 @@ const toggleId = `nxt-tgl-${names.join("-")}`;
   .nxt-ex .fig :global([stroke="#e3c886"]) {
     stroke: var(--nxt-pending-soft);
   }
+  .nxt-ex
+    .fig
+    :global(
+      rect:is([stroke="#a3c7f0"], [stroke="#9fd2ae"], [stroke="#e3c886"]) + text
+    ) {
+    fill: var(--nxt-badge-text);
+    font-weight: 700;
+  }
   .nxt-ex .fig :global(.pgicon) {
     filter: var(--nxt-pg-filter);
     opacity: var(--nxt-pg-opacity);
@@ -171,11 +151,13 @@ const toggleId = `nxt-tgl-${names.join("-")}`;
   .nxt-ex .fig {
     display: flex;
     justify-content: center;
+    width: var(--nxt-figure-width);
+    margin-inline: calc((100% - var(--nxt-figure-width)) / 2);
   }
   .nxt-ex .fig :global(svg) {
     width: 100%;
     height: auto;
-    max-width: 46rem;
+    max-width: none;
   }
 
   .toggle-wrap {
@@ -291,29 +273,32 @@ const toggleId = `nxt-tgl-${names.join("-")}`;
   @keyframes tgPending { 0%, 30% { opacity: 0; } 33%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes tgRoute { 0%, 48% { opacity: 0; } 52%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes tgW2Idle { 0%, 50% { opacity: 1; } 54%, 100% { opacity: 0; } }
-  @keyframes typeList { 0% { transform: translateX(0); } 30% { transform: translateX(91px); } 100% { transform: translateX(91px); } }
-  @keyframes caretList { 0%, 1% { opacity: 0; } 2%, 30% { opacity: 1; } 32%, 100% { opacity: 0; } }
-  @keyframes typeLog { 0% { transform: translateX(0); } 13% { transform: translateX(132px); } 100% { transform: translateX(132px); } }
-  @keyframes caretLog { 0%, 1% { opacity: 0; } 2%, 33% { opacity: 1; } 35%, 100% { opacity: 0; } }
-  @keyframes typeAtt { 0% { transform: translateX(0); } 24% { transform: translateX(196px); } 100% { transform: translateX(196px); } }
-  @keyframes caretAtt { 0%, 1% { opacity: 0; } 2%, 24% { opacity: 1; } 26%, 100% { opacity: 0; } }
-  @keyframes typeTag1 { 0% { transform: translateX(0); } 10% { transform: translateX(122px); } 100% { transform: translateX(122px); } }
-  @keyframes typeTag2 { 0%, 10% { transform: translateX(0); } 20% { transform: translateX(164px); } 100% { transform: translateX(164px); } }
-  @keyframes typeTag3 { 0%, 20% { transform: translateX(0); } 30% { transform: translateX(164px); } 100% { transform: translateX(164px); } }
+  @keyframes typeList { 0%, 1.000% { transform: translateX(0); } 6.417%, 100% { transform: translateX(91px); } }
+  @keyframes caretList { 0%, 0.000% { opacity: 0; } 1.000%, 8.917% { opacity: 1; } 8.927%, 100% { opacity: 0; } }
+  @keyframes typeLog { 0%, 1.000% { transform: translateX(0); } 8.500%, 100% { transform: translateX(132px); } }
+  @keyframes caretLog { 0%, 0.000% { opacity: 0; } 1.000%, 11.000% { opacity: 1; } 11.010%, 100% { opacity: 0; } }
+  @keyframes typeAtt { 0%, 0.400% { transform: translateX(0); } 4.900%, 100% { transform: translateX(196px); } }
+  @keyframes caretAtt { 0%, 0.000% { opacity: 0; } 0.400%, 5.900% { opacity: 1; } 5.910%, 100% { opacity: 0; } }
+  @keyframes caretTag1 { 0%, 0.000% { opacity: 0; } 0.667%, 7.056% { opacity: 1; } 7.066%, 100% { opacity: 0; } }
+  @keyframes caretTag2 { 0%, 10.000% { opacity: 0; } 10.667%, 18.722% { opacity: 1; } 18.732%, 100% { opacity: 0; } }
+  @keyframes caretTag3 { 0%, 20.000% { opacity: 0; } 20.667%, 28.722% { opacity: 1; } 28.732%, 100% { opacity: 0; } }
+  @keyframes typeTag1 { 0%, 0.667% { transform: translateX(0); } 5.389%, 100% { transform: translateX(122px); } }
+  @keyframes typeTag2 { 0%, 10.667% { transform: translateX(0); } 17.056%, 100% { transform: translateX(164px); } }
+  @keyframes typeTag3 { 0%, 20.667% { transform: translateX(0); } 27.056%, 100% { transform: translateX(164px); } }
 
-  /* snapshot figure (9s loop): git status -> nextask enqueue --snapshot ->
+  /* snapshot figure (9s loop): git status -> nextask enqueue --with git ->
      capture + push to remote -> queue pending -> worker claims and clones.
      Reconstructed from the design's animation names (the export omitted the
      keyframes); tuned to the same reveal conventions as the other figures. */
-  @keyframes typeGit { 0% { transform: translateX(0); } 10% { transform: translateX(98px); } 100% { transform: translateX(98px); } }
-  @keyframes caretGit { 0%, 1% { opacity: 0; } 2%, 10% { opacity: 1; } 12%, 100% { opacity: 0; } }
+  @keyframes typeGit { 0%, 0.667% { transform: translateX(0); } 4.278%, 100% { transform: translateX(98px); } }
+  @keyframes caretGit { 0%, 0.000% { opacity: 0; } 0.667%, 5.944% { opacity: 1; } 5.954%, 100% { opacity: 0; } }
   @keyframes gitOut1 { 0%, 11% { opacity: 0; } 13%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes gitOut2 { 0%, 13% { opacity: 0; } 15%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes nxCmd { 0%, 17% { opacity: 0; } 19%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
-  @keyframes typeNx1 { 0%, 18% { transform: translateX(0); } 30% { transform: translateX(256px); } 100% { transform: translateX(256px); } }
-  @keyframes caretNx1 { 0%, 18% { opacity: 0; } 19%, 30% { opacity: 1; } 32%, 100% { opacity: 0; } }
-  @keyframes typeNx2 { 0%, 30% { transform: translateX(0); } 37% { transform: translateX(106px); } 100% { transform: translateX(106px); } }
-  @keyframes caretNx2 { 0%, 30% { opacity: 0; } 31%, 37% { opacity: 1; } 39%, 100% { opacity: 0; } }
+  @keyframes typeNx1 { 0%, 18.667% { transform: translateX(0); } 28.389%, 100% { transform: translateX(256px); } }
+  @keyframes caretNx1 { 0%, 18.000% { opacity: 0; } 18.667%, 30.056% { opacity: 1; } 30.066%, 100% { opacity: 0; } }
+  @keyframes typeNx2 { 0%, 30.667% { transform: translateX(0); } 34.556%, 100% { transform: translateX(106px); } }
+  @keyframes caretNx2 { 0%, 30.000% { opacity: 0; } 30.667%, 36.222% { opacity: 1; } 36.232%, 100% { opacity: 0; } }
   @keyframes snCap { 0%, 39% { opacity: 0; } 41%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes snPush { 0%, 45% { opacity: 0; } 47%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }
   @keyframes snPending { 0%, 49% { opacity: 0; } 51%, 95% { opacity: 1; } 98%, 100% { opacity: 0; } }

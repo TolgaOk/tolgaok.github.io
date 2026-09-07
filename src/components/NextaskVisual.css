@@ -1,0 +1,147 @@
+.nxt,
+.nxt-ex {
+  --nxt-canvas-width: min(72rem, calc(100cqw - 3rem));
+  --nxt-card: #ffffff;
+  --nxt-terminal: #f1f3f5;
+  --nxt-row: #e5e9ee;
+  --nxt-row-highlight: #d8e6f4;
+  --nxt-border: #778391;
+  --nxt-ink: #17212c;
+  --nxt-muted: #465260;
+  --nxt-faint: #606d7c;
+  --nxt-running: #245b91;
+  --nxt-running-soft: #245b91;
+  --nxt-done: #35634c;
+  --nxt-done-soft: #35634c;
+  --nxt-pending: #805b24;
+  --nxt-pending-soft: #805b24;
+  --nxt-badge-text: #ffffff;
+  --nxt-pg-filter: none;
+  --nxt-pg-opacity: 0.85;
+}
+
+.nxt .mono,
+.nxt-ex svg [font-family*="monospace"] {
+  font-family: "SF Mono", Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+html[data-theme="dark"] :is(.nxt, .nxt-ex) {
+  --nxt-card: #252a31;
+  --nxt-terminal: #1d2228;
+  --nxt-row: #353d47;
+  --nxt-row-highlight: #344b63;
+  --nxt-border: #7c8795;
+  --nxt-ink: #f4f6f8;
+  --nxt-muted: #c5ccd5;
+  --nxt-faint: #a1adbb;
+  --nxt-running: #a4c4e3;
+  --nxt-running-soft: #a4c4e3;
+  --nxt-done: #afc8b8;
+  --nxt-done-soft: #afc8b8;
+  --nxt-pending: #d6c19a;
+  --nxt-pending-soft: #d6c19a;
+  --nxt-badge-text: #17212c;
+  --nxt-pg-filter: invert(1);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="device"] :is(.nxt, .nxt-ex) {
+    --nxt-card: #252a31;
+    --nxt-terminal: #1d2228;
+    --nxt-row: #353d47;
+    --nxt-row-highlight: #344b63;
+    --nxt-border: #7c8795;
+    --nxt-ink: #f4f6f8;
+    --nxt-muted: #c5ccd5;
+    --nxt-faint: #a1adbb;
+    --nxt-running: #a4c4e3;
+    --nxt-running-soft: #a4c4e3;
+    --nxt-done: #afc8b8;
+    --nxt-done-soft: #afc8b8;
+    --nxt-pending: #d6c19a;
+    --nxt-pending-soft: #d6c19a;
+    --nxt-badge-text: #17212c;
+    --nxt-pg-filter: invert(1);
+  }
+}
+
+:is(.nxt, .nxt-ex svg) rect[stroke] {
+  stroke-width: 1.6;
+}
+
+.nxt-ex svg rect[stroke="#a3c7f0"],
+.nxt rect[stroke="var(--nxt-running-soft)"] {
+  fill: var(--nxt-running);
+}
+
+.nxt-ex svg rect[stroke="#9fd2ae"],
+.nxt rect[stroke="var(--nxt-done-soft)"] {
+  fill: var(--nxt-done);
+}
+
+.nxt-ex svg rect[stroke="#e3c886"],
+.nxt rect[stroke="var(--nxt-pending-soft)"] {
+  fill: var(--nxt-pending);
+}
+
+.nxt-ex
+  .fig
+  svg
+  rect:is([stroke="#a3c7f0"], [stroke="#9fd2ae"], [stroke="#e3c886"])
+  + text,
+.nxt
+  rect:is(
+    [stroke="var(--nxt-running-soft)"],
+    [stroke="var(--nxt-done-soft)"],
+    [stroke="var(--nxt-pending-soft)"]
+  )
+  + text {
+  fill: var(--nxt-badge-text);
+  font-weight: 700;
+}
+
+.nxt .pulse {
+  display: none;
+}
+
+.nxt .worker-status {
+  fill: #39e878;
+  stroke: #21884b;
+  stroke-width: 0.8;
+  filter: drop-shadow(0 0 3px rgb(57 232 120 / 0.65));
+}
+
+.nxt [marker-end] {
+  stroke-width: 1.5;
+}
+
+.nxt .stream,
+.nxt .stream2 {
+  stroke-width: 2;
+}
+
+.nxt-ex .terminal-cursor {
+  animation: nxt-cursor-blink 0.9s step-end infinite;
+}
+
+.nxt-ex .typing-cursor .terminal-cursor {
+  animation: none;
+}
+
+@keyframes nxt-cursor-blink {
+  0%, 55% { opacity: 1; }
+  56%, 100% { opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nxt-ex .typing-cursor,
+  .nxt-ex .terminal-cursor {
+    display: none;
+  }
+}
+
+.nxt .worker-glow,
+.nxt .worker-busy {
+  stroke-dasharray: none;
+  stroke-width: 2;
+}
