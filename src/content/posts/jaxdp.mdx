@@ -1,58 +1,202 @@
 ---
 title: jaxdp
-description: Vectorized dynamic programming on JAX for finite MDPs.
+description: Exact dynamic programming for finite Markov decision processes in JAX.
 date: 2024-09-04
 kind: software
+image: ../../assets/jaxdp/jaxdp-dp.svg
 ---
 
+import { Image } from "astro:assets";
 import Header from "@/components/Header.astro";
+import HighlightedSection from "@/components/HighlightedSection.astro";
+import Aside from "@/components/Aside.astro";
+import JaxdpPlanningChart from "@/components/JaxdpPlanningChart";
+import JaxdpVmapBenchmark from "@/components/JaxdpVmapBenchmark";
+import jaxdpLogo from "@/assets/jaxdp/jaxdp-dp.svg";
 
 <Header
-  title="jaxdp"
-  authors={[]}
   links={[
     { name: "Code", url: "https://github.com/TolgaOk/jaxdp", icon: "ri:github-line" },
+    { name: "Install", url: "#try-it", icon: "ri:download-2-line" },
   ]}
-/>
+>
+  <Fragment slot="title">
+    <span class="inline-flex items-center justify-center gap-4">
+      <Image
+        src={jaxdpLogo}
+        alt=""
+        width={256}
+        class="not-prose m-0 size-16 shrink-0 rounded-xl object-cover"
+      />
+      <span>jaxdp</span>
+    </span>
+  </Fragment>
+</Header>
 
-[Jaxdp](https://github.com/TolgaOk/jaxdp) is a vectorized dynamic programming package built on JAX for finite MDPs.
+<HighlightedSection>
 
-## Example
+## TL;DR
 
-In jaxdp, you define the value update rule for the simplest case and let JAX vectorize it for multiple initial values or/and MDPs.
+`jaxdp` provides JAX-compatible MDPs, dynamic programming operators, mappings, and planning algorithms.
+`jaxdp` is designed for studying the theoretical foundations of reinforcement learning.
 
-```python title="Vectorized Algorithms"
-from jaxdp.iterations.iteration import value_iteration_update
-from jax import vmap
+</HighlightedSection>
 
-...
 
-# Regular VI step
-regular_vi_step = value_iteration_update(value, mdp, gamma)
+Dynamic programming provides a framework for studying reinforcement learning (RL).
+Dynamic programming forms the foundation of many modern RL algorithms and helps us understand the theory behind the operators used in value estimation and policy improvement.
 
-# Multiple values VI step
-mv_vi_step = vmap(value_iteration_update, in_axes=(0, None, None))(values, mdp, gamma)
+`jaxdp` provides JAX-compatible operators, mappings, and MDPs for studying dynamic programming.
+We can combine these components to implement algorithms and study their behavior across different MDPs.
 
-# Multiple values multiple MDPs VI step
-mvmm_vi_step = vmap(mv_vi_step, in_axes=(None, 0, None))(values, mdps, gamma)
+
+## Components
+
+In `jaxdp`, most operators and mappings take an `MDP` dataclass as an explicit argument.
+An MDP (`jaxdp.MDP`) contains JAX arrays for the transition probabilities $P$, rewards $R$, initial distribution $\mu$, and termination indicators.
+`jaxdp.make` provides predefined recipes for environments such as Frozen Lake, Garnet, and Four Rooms.
+These are selected by name, following the same convention as [Gymnasium's `make`](https://gymnasium.farama.org/api/registry/#gymnasium.make).
+
+```python title="MDP" ipython
+In [1]: import jaxdp
+
+In [2]: mdp = jaxdp.make("garnet")
+In [3]: mdp.transition.shape # (action, next_state, state)
+Out[3]: (4, 10, 10)
 ```
 
-Similarly, you can vectorize MDPs with different parameters. Note that the MDPs should have the same state and action sizes.
+Operators use the MDP through this shared interface.
+Let $\mathcal{T}_V^*$ and $\mathcal{T}_Q^*$ be the Bellman optimality operators on state-value and action-value functions, respectively.
+`jaxdp.bellman_opt_op` provides `.v` and `.q` methods for computing $\mathcal{T}_V^*v$ and $\mathcal{T}_Q^*q$.
+The suffix distinguishes state-value and action-value representations.
+This convention extends to mappings such as `reward`, where `reward.s(mdp, policy)` returns the state reward $r^\pi: S \to \mathbb{R}$ and `reward.sa(mdp)` returns the state-action reward $r: S \times A \to \mathbb{R}$.
 
-```python title="Vectorized garnet MDPs with different seeds"
-import jax.numpy as jnp
-import jax.tree_util
+```python title="Operators and mappings" ipython
+In [4]: jaxdp.bellman_opt_op.v(mdp, v, gamma).shape
+Out[4]: (10,)
+In [5]: jaxdp.bellman_opt_op.q(mdp, q, gamma).shape
+Out[5]: (4, 10)
 
-from jaxdp.mdp.garnet import garnet_mdp as make_garnet
-
-
-n_mdp = 10
-key = jax.random.PRNGKey(42)
-
-mdps = [make_garnet(state_size=1000, action_size=10, key=key,
-                    branch_size=4, min_reward=-1, max_reward=1)
-        for key in jrd.split(key, n_mdp)]
-
-# Stacked MDP
-stacked_mdp = jax.tree_map(lambda *mdps: jnp.stack(mdps), *mdps)
+In [6]: jaxdp.reward.s(mdp, policy).shape
+Out[6]: (10,)
+In [7]: jaxdp.reward.sa(mdp).shape
+Out[7]: (4, 10)
 ```
+
+With the Bellman optimality operator, we can implement value iteration through the recurrence $v_{k+1} = \mathcal{T}_V^*v_k$.
+`jaxdp.ValueIteration` implements this recurrence and, together with several other planning algorithms in the library, follows the interface shown below.
+
+```python title="value iteration" ipython
+In [8]: algo = jaxdp.ValueIteration(gamma=gamma)
+In [9]: alg_state = algo.init(mdp)
+In [10]: alg_state = algo.update(mdp, alg_state)
+```
+
+In `jaxdp`, the variables that an algorithm carries between iterations are grouped in a dataclass called `State`.
+`algo.init(mdp)` creates the initial state, and each call to `algo.update(mdp, alg_state)` returns a new `State` for the next iteration.
+For value iteration, the state contains the current estimate `v_val`, initialized to $v_0 = 0$.
+More elaborate updates retain additional variables through the same interface.
+
+For example, `jaxdp.MomentumValueIteration` includes a momentum term proportional to $v_k - v_{k-1}$.
+Computing this difference requires the previous estimate alongside the current one, so `State` retains both.
+
+```python title="State dataclass"
+@chex.dataclass(frozen=True)
+class State:
+    v_val: jax.Array       # Current value estimate
+    prev_v_val: jax.Array  # Previous value estimate
+```
+
+<Aside title="Naming convention" id="naming-convention">
+
+Capitalized component names, such as `ValueIteration`, refer to classes that we instantiate before use, for example with `jaxdp.ValueIteration(gamma=gamma)`.
+
+Lowercase operators and mappings, such as `bellman_opt_op` and `reward`, can be used directly through the appropriate `.v`, `.q`, `.s`, or `.sa` method.
+
+</Aside>
+
+For the full API and available environments, see the [component reference](https://github.com/TolgaOk/jaxdp/blob/master/jaxdp/README.md).
+
+## Leveraging JAX
+
+By passing the algorithm state explicitly between updates, we can express a complete run with `jax.lax.fori_loop`.
+Since the update rules in `jaxdp` operate on JAX arrays, we can also apply automatic vectorization to the complete run through `vmap`, a transformation that batches a function over selected input axes.
+This lets us evaluate the same algorithm across multiple seeds and discount factors, with `jit` providing just-in-time compilation of the batched computation.
+
+```python title="Across multiple seeds and discounts"
+@jax.jit
+@partial(jax.vmap, in_axes=(0, None))
+@partial(jax.vmap, in_axes=(None, 0))
+def run(key, gamma):
+    mdp = make(key)
+    algo = jaxdp.ValueIteration(gamma=gamma)
+    state = jax.lax.fori_loop(
+        0, 1_000, lambda _, s: algo.update(mdp, s), algo.init(mdp)
+    )
+    return state.v_val
+```
+
+Once we `vmap` and `jit` the `run` function, we can evaluate it across multiple seeds and discount factors.
+
+```python title="vmap example" ipython
+In [11]: gammas = jnp.array([0.9, 0.95, 0.99, 0.999])
+In [12]: keys = jax.random.split(jax.random.key(0), 100)
+
+In [13]: vals = run(keys, gammas)
+In [14]: vals.shape
+Out[14]: (100, 4, ...)
+```
+
+In the above example, the inner `vmap` evaluates all four discount factors for a fixed seed, and the outer `vmap` repeats this sweep across 100 seeds.
+Each combination runs 1,000 updates, so `vals` contains the final value functions arranged along `(seed, discount, state)` axes.
+
+To compare execution times across algorithms, we batch $M = 1{,}000$ discount factors for each of four fixed MDPs.
+With $N = 1{,}000$ updates per discount factor, each measurement covers $MN = 10^6$ algorithm updates.
+The environments are compiled separately because their state and action dimensions differ.
+
+<JaxdpVmapBenchmark fontScale={1.2} client:load />
+
+We run each batch five times on an Apple M5 CPU and measure the time in seconds to complete one million updates across the discount factors.
+We plot the median runtime as a bar and add a capped interval for the interquartile range to show variation between runs.
+To compare throughput across environments, we convert the median runtimes into updates per second and use a shared color scale.
+
+Across the four environments, `jaxdp` averages less than one second per million updates with each of the four algorithms.
+
+## Comparing convergence
+
+`jaxdp` separates the update rules from the MDPs and evaluation operators, letting us reuse the same experiment loop across algorithms.
+We can add new algorithms by implementing the `init` and `update` methods.
+
+The functional approach adopted in `jaxdp` lets us use `init` and `update` to compare algorithm convergence within a common experimental setup.
+For instance, we run four algorithms on four MDPs, namely Frozen Lake, Four Rooms, Long Forest, and Garnet, for 500 steps at $\gamma = 0.99$.
+The figure below shows how the Bellman residual and value error change over these steps.
+
+<JaxdpPlanningChart fontScale={1.2} client:load />
+
+Curve colors indicate the value of the selected metric after 500 updates (the final error).
+
+Anderson acceleration can reduce the number of updates needed for convergence, although each update requires more computation.
+Whether this improvement carries over to the corresponding estimator remains a statistical question.
+
+
+## Conclusion
+
+`jaxdp` provides a setting for investigating these questions at the operator level.
+By working directly with the operators and using optimal value functions and policies as references, we can examine how RL algorithms approach these solutions and understand what drives their convergence.
+This analysis can guide the design of new estimators, whose statistical properties we can then investigate theoretically and empirically.
+For instance, algorithms derived for optimization frequently inspired their RL counterparts.
+For more rigorous coverage of the connection between optimization and RL algorithms, see [Ok et al. (2025)](https://arxiv.org/pdf/2512.07377).
+
+## Try it
+
+`jaxdp` requires Python 3.11 or newer and JAX 0.8 or newer.
+
+```sh title="Terminal" frame="terminal"
+uv add jaxdp
+```
+
+To install via `pip`, use `pip install jaxdp`.
+
+The [component reference](https://github.com/TolgaOk/jaxdp/blob/master/jaxdp/README.md) lists the public API and available MDP recipes.
+Contributors can install the development dependencies with `uv add "jaxdp[dev]"`.
+Citation metadata is available in [`CITATION.cff`](https://github.com/TolgaOk/jaxdp/blob/master/CITATION.cff).

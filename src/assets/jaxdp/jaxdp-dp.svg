@@ -1,0 +1,31 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 120 120"
+  width="120"
+  height="120"
+  role="img"
+  aria-label="jaxdp"
+>
+  <title>jaxdp</title>
+  <defs>
+    <linearGradient id="background" x1="10" y1="8" x2="110" y2="112" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#2a56c6" />
+      <stop offset="0.5" stop-color="#26a69a" />
+      <stop offset="1" stop-color="#9c27b0" />
+    </linearGradient>
+  </defs>
+
+  <rect width="120" height="120" rx="28" fill="url(#background)" />
+  <text
+    x="60"
+    y="79"
+    text-anchor="middle"
+    fill="#ffffff"
+    font-family="ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'Liberation Mono', monospace"
+    font-size="54"
+    font-weight="700"
+    letter-spacing="-2"
+  >
+    dp
+  </text>
+</svg>
