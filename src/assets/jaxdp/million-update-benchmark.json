@@ -1,0 +1,166 @@
+{
+  "metadata": {
+    "jaxdpVersion": "0.4.0",
+    "jaxVersion": "0.11.1",
+    "backend": "cpu",
+    "device": "Apple M5 CPU",
+    "stepsPerSetting": 1000,
+    "settings": 1000,
+    "totalUpdates": 1000000,
+    "hyperparameter": "discount factor",
+    "gammaMin": 0.9,
+    "gammaMax": 0.999,
+    "warmups": 1,
+    "repetitions": 5,
+    "statistic": "median",
+    "includesCompilation": false,
+    "includesInitialization": true,
+    "x64": true
+  },
+  "environments": [
+    {
+      "id": "frozen-lake-deterministic",
+      "label": "Frozen Lake",
+      "states": 16,
+      "actions": 4,
+      "timings": [
+        {
+          "algorithm": "value-iteration",
+          "label": "Value iteration",
+          "medianSeconds": 0.085476,
+          "p25Seconds": 0.073398208,
+          "p75Seconds": 0.085527041
+        },
+        {
+          "algorithm": "anchored-vi",
+          "label": "Anchored VI",
+          "medianSeconds": 0.074038084,
+          "p25Seconds": 0.073930625,
+          "p75Seconds": 0.074356208
+        },
+        {
+          "algorithm": "anderson-vi",
+          "label": "Anderson VI",
+          "medianSeconds": 0.361058917,
+          "p25Seconds": 0.360191583,
+          "p75Seconds": 0.361107833
+        },
+        {
+          "algorithm": "safe-anderson-vi",
+          "label": "Safe Anderson VI",
+          "medianSeconds": 0.40013,
+          "p25Seconds": 0.400084042,
+          "p75Seconds": 0.401510625
+        }
+      ]
+    },
+    {
+      "id": "four-rooms",
+      "label": "Four Rooms",
+      "states": 104,
+      "actions": 4,
+      "timings": [
+        {
+          "algorithm": "value-iteration",
+          "label": "Value iteration",
+          "medianSeconds": 0.491294333,
+          "p25Seconds": 0.489385083,
+          "p75Seconds": 0.491326625
+        },
+        {
+          "algorithm": "anchored-vi",
+          "label": "Anchored VI",
+          "medianSeconds": 0.513637,
+          "p25Seconds": 0.507709709,
+          "p75Seconds": 0.515778917
+        },
+        {
+          "algorithm": "anderson-vi",
+          "label": "Anderson VI",
+          "medianSeconds": 1.358419291,
+          "p25Seconds": 1.33667075,
+          "p75Seconds": 1.395276833
+        },
+        {
+          "algorithm": "safe-anderson-vi",
+          "label": "Safe Anderson VI",
+          "medianSeconds": 2.040104,
+          "p25Seconds": 2.0352295,
+          "p75Seconds": 2.046496708
+        }
+      ]
+    },
+    {
+      "id": "forest-long",
+      "label": "Long forest",
+      "states": 11,
+      "actions": 2,
+      "timings": [
+        {
+          "algorithm": "value-iteration",
+          "label": "Value iteration",
+          "medianSeconds": 0.033303875,
+          "p25Seconds": 0.03324575,
+          "p75Seconds": 0.033322
+        },
+        {
+          "algorithm": "anchored-vi",
+          "label": "Anchored VI",
+          "medianSeconds": 0.0356745,
+          "p25Seconds": 0.035570416,
+          "p75Seconds": 0.035767125
+        },
+        {
+          "algorithm": "anderson-vi",
+          "label": "Anderson VI",
+          "medianSeconds": 0.306518458,
+          "p25Seconds": 0.304498541,
+          "p75Seconds": 0.306709042
+        },
+        {
+          "algorithm": "safe-anderson-vi",
+          "label": "Safe Anderson VI",
+          "medianSeconds": 0.307008416,
+          "p25Seconds": 0.303928125,
+          "p75Seconds": 0.307196458
+        }
+      ]
+    },
+    {
+      "id": "garnet-medium",
+      "label": "Garnet",
+      "states": 50,
+      "actions": 5,
+      "timings": [
+        {
+          "algorithm": "value-iteration",
+          "label": "Value iteration",
+          "medianSeconds": 0.252934833,
+          "p25Seconds": 0.251978625,
+          "p75Seconds": 0.253567417
+        },
+        {
+          "algorithm": "anchored-vi",
+          "label": "Anchored VI",
+          "medianSeconds": 0.261653,
+          "p25Seconds": 0.261640959,
+          "p75Seconds": 0.26200275
+        },
+        {
+          "algorithm": "anderson-vi",
+          "label": "Anderson VI",
+          "medianSeconds": 0.673673292,
+          "p25Seconds": 0.669845375,
+          "p75Seconds": 0.674013291
+        },
+        {
+          "algorithm": "safe-anderson-vi",
+          "label": "Safe Anderson VI",
+          "medianSeconds": 0.8905795,
+          "p25Seconds": 0.890088167,
+          "p75Seconds": 0.892450625
+        }
+      ]
+    }
+  ]
+}
