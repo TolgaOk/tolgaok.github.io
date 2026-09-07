@@ -15,8 +15,7 @@ import NextaskDiagram from "@/components/NextaskDiagram.astro";
 import NextaskFigure from "@/components/NextaskFigure.astro";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/starwind/tabs";
 
-import lockupLight from "@/assets/nextask/nextask-lockup-light.svg";
-import lockupDark from "@/assets/nextask/nextask-lockup-dark.svg";
+import nextaskLogo from "@/assets/nextask/nextask-mark.svg";
 
 <Header
   links={[
@@ -33,16 +32,15 @@ import lockupDark from "@/assets/nextask/nextask-lockup-dark.svg";
   ]}
 >
   <Fragment slot="title">
-    <Image
-      src={lockupLight}
-      alt="nextask"
-      class="not-prose m-0 h-16 w-auto dark:hidden"
-    />
-    <Image
-      src={lockupDark}
-      alt="nextask"
-      class="not-prose m-0 hidden h-16 w-auto dark:block"
-    />
+    <span class="inline-flex items-center justify-center gap-4">
+      <Image
+        src={nextaskLogo}
+        alt=""
+        width={256}
+        class="not-prose m-0 size-16 shrink-0 rounded-xl object-cover"
+      />
+      <span>nextask</span>
+    </span>
   </Fragment>
 </Header>
 
@@ -219,8 +217,6 @@ nextask wait --tag exp=sweep        # block until all `exp=sweep` tasks are fini
 
 The final command wakes the agent only after all tasks have finished.
 When an agent enqueues long-running tasks, you and other agents can independently monitor their progress, stream their logs, check their status, and track their results without interrupting the submitting agent.
-
-
 
 ## Install
 
