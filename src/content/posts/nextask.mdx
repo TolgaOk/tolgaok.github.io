@@ -92,17 +92,17 @@ The diagram below shows how these components fit together.
 The **CLI** lets us enqueue, list, monitor, and inspect logs for tasks.
 Before looking at individual commands, let's walk through an example of how it works once everything is set up.
 
-Let's begin with a project. Crucially, it must be a **Git repository**.
+Let's begin with a project. To send its code to the worker with `--with git`, it must be a **Git repository** with at least one commit and a configured remote.
 Suppose we want to delegate a task to an available worker running on a powerful GPU server, a remote workstation, or a production server to which we have secure access.
 To run the task on a worker, enqueue it from the project directory:
 ```sh title="~/project" frame="terminal"
-nextask enqueue "python script.py"
+nextask enqueue "python script.py" --with git
 ```
 This adds the task to the queue. When a matching worker becomes available, it runs the task and streams the logs back to the database.
 To follow the task as if it were running locally, add the `--attach` flag:
 
 ```sh title="~/project" frame="terminal"
-nextask enqueue "python script.py" --attach
+nextask enqueue "python script.py" --with git --attach
 ```
 This streams the logs to your terminal in real time while also storing them in the database.
 
@@ -145,6 +145,9 @@ Tags route tasks to matching workers. For example, enqueuing with `--tag image=p
 Each snapshot is tagged with the task ID and pushed as a separate branch to the remote repository configured in `nextask`.
 No snapshot branch is created in the local repository.
 
+Without `--with git`, tasks do not require a Git repository, but local project files are not transferred to the worker.
+The worker needs the dependencies required by the task; the snapshot only preserves project files.
+
 <NextaskFigure names={["snapshot"]} />
 
     </TabsContent>
@@ -159,16 +162,16 @@ You can view registered workers from the CLI or register one on the current mach
 nextask worker
 ```
 
-- `--filter` lets the worker accept only tasks with a matching tag value.
+- `--tag` lets the worker accept only tasks with matching tag values.
 - `--exit-if-idle <time>` stops the worker after being idle for `<time>`.
 - `--once` stops the worker after the first task.
 
 To start a worker that accepts only tasks matching `image=pytorch gpu=a100` and exits after one hour of idleness, run:
 ```sh
-nextask worker --filter image=pytorch gpu=a100 --exit-if-idle 1h
+nextask worker --tag image=pytorch,gpu=a100 --exit-if-idle 1h
 ```
 
-Use the following commands to manage workers on your local machine:
+Use the following commands to manage registered workers:
 
 ```sh
 nextask worker list                      # list workers
@@ -225,3 +228,6 @@ To install `nextask`, run:
 ```bash
 curl -fsSL https://raw.githubusercontent.com/TolgaOk/nextask/main/install | bash
 ```
+
+Before submitting tasks, configure the PostgreSQL connection, run `nextask init db`, and start a worker.
+See the [configuration guide](https://github.com/TolgaOk/nextask/blob/main/doc/configuration.md) for setup instructions.
