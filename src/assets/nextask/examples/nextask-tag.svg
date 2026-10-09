@@ -23,7 +23,7 @@
         <g class="typing-cursor" style="animation:typeTag3 9s steps(23, end) infinite, caretTag3 9s steps(1, end) infinite"><rect class="terminal-cursor" x="26" y="107" width="2" height="14" fill="#1a7f37"></rect></g>
         </g>
         <g style="animation:tgPending 9s ease infinite">
-          <text x="26" y="150" fill="#57606a"><tspan fill="#0969da">[7f31aa]</tspan> pending · image=pytorch</text>
+          <text x="26" y="150" fill="#57606a"><tspan fill="#0969da">[7f31aa]</tspan> pending | image=pytorch</text>
           <text x="26" y="180" fill="#1a7f37">❯</text><rect class="terminal-cursor" x="36" y="171" width="2" height="11" fill="#1a7f37" style="animation:blink 1.1s step-end infinite"></rect>
         </g>
       </g>

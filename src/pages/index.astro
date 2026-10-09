@@ -15,7 +15,9 @@ const kindOrder = ["research", "software"];
 const kinds = [
   ...kindOrder.filter((kind) => posts.some((post) => post.data.kind === kind)),
   ...new Set(
-    posts.map((post) => post.data.kind).filter((kind) => !kindOrder.includes(kind)),
+    posts
+      .map((post) => post.data.kind)
+      .filter((kind) => !kindOrder.includes(kind)),
   ),
 ];
 
@@ -23,17 +25,18 @@ const publications = [
   {
     title: "Limiting-Kernel Q(λ): Bridging Short and Long Horizons",
     url: "https://arxiv.org/abs/2609.27741",
-    venue: "arXiv 2026",
-    status: "2609.27741",
-    authors: "Tolga Ok, Arman Sharifi Kolarijani, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
-    links: [
-      { name: "Paper", url: "https://arxiv.org/pdf/2609.27741" },
-    ],
+    venue: "arXiv",
+    year: 2026,
+    status: "under review",
+    authors:
+      "Tolga Ok, Arman Sharifi Kolarijani, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
+    links: [{ name: "Paper", url: "https://arxiv.org/pdf/2609.27741" }],
   },
   {
     title: "Offline Reinforcement Learning via Inverse Optimization",
     url: "https://openreview.net/forum?id=lSj2gXoeCy",
-    venue: "TMLR 2026",
+    venue: "TMLR",
+    year: 2026,
     authors: "Ioannis Dimanidis, Tolga Ok, and Peyman Mohajerin Esfahani",
     links: [
       { name: "Paper", url: "https://openreview.net/pdf?id=lSj2gXoeCy" },
@@ -41,43 +44,58 @@ const publications = [
     ],
   },
   {
-    title: "Control and Reinforcement Learning through the Lens of Optimization: An Algorithmic Perspective",
+    title:
+      "Control and Reinforcement Learning through the Lens of Optimization: An Algorithmic Perspective",
     url: "https://arxiv.org/pdf/2512.07377",
-    venue: "arXiv 2025",
-    status: "2512.07377 · under review",
-    authors: "Tolga Ok, Arman Sharifi Kolarijani, Mohamad Amin Sharifi Kolarijani, and Peyman Mohajerin Esfahani",
-    links: [
-      { name: "Paper", url: "https://arxiv.org/pdf/2512.07377" },
-    ],
+    venue: "arXiv",
+    year: 2025,
+    status: "under review",
+    authors:
+      "Tolga Ok, Arman Sharifi Kolarijani, Mohamad Amin Sharifi Kolarijani, and Peyman Mohajerin Esfahani",
+    links: [{ name: "Paper", url: "https://arxiv.org/pdf/2512.07377" }],
   },
   {
     title: "Rank-One Modified Value Iteration",
     url: "https://proceedings.mlr.press/v267/kolarijani25a.html",
-    venue: "ICML 2025",
-    authors: "Arman Sharifi Kolarijani, Tolga Ok, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
+    venue: "ICML",
+    year: 2025,
+    authors:
+      "Arman Sharifi Kolarijani, Tolga Ok, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
     links: [
-      { name: "Paper", url: "https://raw.githubusercontent.com/mlresearch/v267/main/assets/kolarijani25a/kolarijani25a.pdf" },
+      {
+        name: "Paper",
+        url: "https://proceedings.mlr.press/v267/kolarijani25a.html",
+      },
       { name: "Code", url: "https://github.com/TolgaOk/r1vi-paper" },
     ],
   },
   {
     title: "Scalable Kernel Inverse Optimization",
     url: "https://proceedings.neurips.cc/paper_files/paper/2024/hash/b3f269d610fc0a0972bd4c2f4905165a-Abstract-Conference.html",
-    venue: "NeurIPS 2024",
-    authors: "Youyuan Long, Tolga Ok, Pedro Zattoni Scroccaro, and Peyman Mohajerin Esfahani",
+    venue: "NeurIPS",
+    year: 2024,
+    authors:
+      "Youyuan Long, Tolga Ok, Pedro Zattoni Scroccaro, and Peyman Mohajerin Esfahani",
     links: [
-      { name: "Paper", url: "https://proceedings.neurips.cc/paper_files/paper/2024/file/b3f269d610fc0a0972bd4c2f4905165a-Paper-Conference.pdf" },
-      { name: "Code", url: "https://github.com/Longyouyuan/Scalable-Kernel-Inverse-Optimization" },
+      {
+        name: "Paper",
+        url: "https://proceedings.neurips.cc/paper_files/paper/2024/file/b3f269d610fc0a0972bd4c2f4905165a-Paper-Conference.pdf",
+      },
+      {
+        name: "Code",
+        url: "https://github.com/Longyouyuan/Scalable-Kernel-Inverse-Optimization",
+      },
     ],
   },
   {
-    title: "Core Skill Decomposition of Complex Wargames with Reinforcement Learning",
+    title:
+      "Core Skill Decomposition of Complex Wargames with Reinforcement Learning",
     url: "https://arc.aiaa.org/doi/abs/10.2514/6.2022-2084",
-    venue: "AIAA SciTech 2022",
-    authors: "Kubilay Kağan Kömürcü, Batuhan İnce, Tolga Ok, Emircan Kılıçkaya, and Nazım Kemal Üre",
-    links: [
-      { name: "Paper", url: "https://doi.org/10.2514/6.2022-2084" },
-    ],
+    venue: "AIAA SciTech",
+    year: 2022,
+    authors:
+      "Kubilay Kağan Kömürcü, Batuhan İnce, Tolga Ok, Emircan Kılıçkaya, and Nazım Kemal Üre",
+    links: [{ name: "Paper", url: "https://doi.org/10.2514/6.2022-2084" }],
   },
 ];
 
@@ -179,10 +197,10 @@ const formatDate = (date: Date) =>
                     {post.data.title}
                   </a>
                   <span class="text-base text-zinc-500 dark:text-zinc-400">
-                    {" · "}
+                    {" | "}
                     {formatDate(post.data.date)}
                   </span>
-                  {post.data.description && <> · {post.data.description}</>}
+                  {post.data.description && <> | {post.data.description}</>}
                 </div>
               </li>
             ))}
@@ -191,25 +209,50 @@ const formatDate = (date: Date) =>
     ))
   }
 
-  <section>
+  <section aria-labelledby="publications">
     <h2 id="publications">Publications</h2>
-    <ul>
+    <ul role="list" class="mt-0 mb-0 grid list-none gap-6 p-0">
       {
         publications.map((publication) => (
-          <li>
-            {publication.title}
-            <span class="text-base text-zinc-500 dark:text-zinc-400">
-              {" · "}
-              <span class="font-bold">{publication.venue}</span>
-              {publication.status && <> · {publication.status}</>}
-            </span>
-            {publication.links.map((link) => (
-              <a class="ms-2 inline-block text-base" href={link.url}>
-                {link.name}
-              </a>
-            ))}
-            <div class="text-base text-zinc-500 dark:text-zinc-400">
+          <li class="mt-0 mb-0 grid gap-1 p-0">
+            <h3 class="mt-0 mb-0 text-lg leading-7 font-normal text-zinc-900 dark:text-zinc-100">
+              {publication.title}
+            </h3>
+            <p class="mt-0 mb-0 text-base text-zinc-500 dark:text-zinc-400">
               {publication.authors}
+            </p>
+            <div class="flex items-baseline justify-between gap-4 text-base">
+              <span class="flex min-w-0 flex-wrap items-baseline gap-x-3">
+                <span class="font-bold text-zinc-700 dark:text-zinc-300">
+                  {publication.venue} {publication.year}
+                </span>
+                {publication.status && (
+                  <span class="text-zinc-500 dark:text-zinc-400">
+                    {publication.status}
+                  </span>
+                )}
+              </span>
+              <span class="inline-flex shrink-0 items-baseline gap-2">
+                {publication.links.map((link, index) => (
+                  <>
+                    {index > 0 && (
+                      <span
+                        aria-hidden="true"
+                        class="text-zinc-400 dark:text-zinc-600"
+                      >
+                        |
+                      </span>
+                    )}
+                    <a
+                      href={link.url}
+                      aria-label={`${link.name} for ${publication.title}`}
+                      class="rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-blue-600 dark:focus-visible:outline-blue-300"
+                    >
+                      {link.name}
+                    </a>
+                  </>
+                ))}
+              </span>
             </div>
           </li>
         ))

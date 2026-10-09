@@ -29,7 +29,7 @@
       <text class="l5" x="56" y="268" fill="var(--nxt-muted)"><tspan fill="var(--nxt-running)">[a3f9c2]</tspan> epoch 1/3&#160;&#160;loss 0.482</text>
       <text class="l6" x="56" y="292" fill="var(--nxt-muted)"><tspan fill="var(--nxt-running)">[a3f9c2]</tspan> epoch 2/3&#160;&#160;loss 0.211</text>
       <text class="l7" x="56" y="316" fill="var(--nxt-muted)"><tspan fill="var(--nxt-running)">[a3f9c2]</tspan> epoch 3/3&#160;&#160;loss 0.094</text>
-      <text class="l8" x="56" y="340" fill="var(--nxt-done)">&#10003; a3f9c2 completed &#183; exit 0</text>
+      <text class="l8" x="56" y="340" fill="var(--nxt-done)">&#10003; a3f9c2 completed | exit 0</text>
     </g>
   </g>
 

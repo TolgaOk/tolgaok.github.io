@@ -36,7 +36,7 @@
         <g style="animation:snCap 9s ease infinite"><text x="26" y="188" fill="#57606a"><tspan fill="#9a6700">●</tspan> captured 1 dirty file</text></g>
         <g style="animation:snPush 9s ease infinite"><text x="26" y="210" fill="#57606a"><tspan fill="#1a7f37">✓</tspan> pushed branch 7f31aa</text></g>
         <g style="animation:snPending 9s ease infinite">
-          <text x="26" y="238" fill="#57606a"><tspan fill="#0969da">[7f31aa]</tspan> pending · branch 7f31aa</text>
+          <text x="26" y="238" fill="#57606a"><tspan fill="#0969da">[7f31aa]</tspan> pending | branch 7f31aa</text>
           <text x="26" y="266" fill="#1a7f37">❯</text><rect class="terminal-cursor" x="36" y="257" width="2" height="11" fill="#1a7f37" style="animation:blink 1.1s step-end infinite"></rect>
         </g>
       </g>
