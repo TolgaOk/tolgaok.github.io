@@ -21,28 +21,63 @@ const kinds = [
 
 const publications = [
   {
-    title: "Scalable Kernel Inverse Optimization",
-    venue: "NeurIPS 2024",
-    authors:
-      "Youyuan Long, Tolga Ok, Pedro Zattoni Scroccaro, and Peyman Mohajerin Esfahani",
-    links: [{ name: "OpenReview", url: "https://openreview.net/forum?id=Mktgayam7U" }],
-  },
-  {
-    title: "Offline Reinforcement Learning via Inverse Optimization",
-    venue: "Preprint 2024",
-    authors: "Ioannis Dimanidis, Tolga Ok, and Peyman Mohajerin Esfahani",
+    title: "Limiting-Kernel Q(λ): Bridging Short and Long Horizons",
+    url: "https://arxiv.org/abs/2609.27741",
+    venue: "arXiv 2026",
+    status: "2609.27741",
+    authors: "Tolga Ok, Arman Sharifi Kolarijani, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
     links: [
-      {
-        name: "PDF",
-        url: "https://www.dcsc.tudelft.nl/~mohajerin/Publications/journal/2024/RL_Inv.pdf",
-      },
+      { name: "Paper", url: "https://arxiv.org/pdf/2609.27741" },
     ],
   },
   {
-    title: "Long-horizon Value Gradient Methods on Stiefel Manifold",
-    venue: "M.S. Thesis 2022 · Istanbul Technical University",
-    authors: "Tolga Ok",
-    links: [],
+    title: "Offline Reinforcement Learning via Inverse Optimization",
+    url: "https://openreview.net/forum?id=lSj2gXoeCy",
+    venue: "TMLR 2026",
+    authors: "Ioannis Dimanidis, Tolga Ok, and Peyman Mohajerin Esfahani",
+    links: [
+      { name: "Paper", url: "https://openreview.net/pdf?id=lSj2gXoeCy" },
+      { name: "Code", url: "https://github.com/TolgaOk/offlineRLviaIO" },
+    ],
+  },
+  {
+    title: "Control and Reinforcement Learning through the Lens of Optimization: An Algorithmic Perspective",
+    url: "https://arxiv.org/pdf/2512.07377",
+    venue: "arXiv 2025",
+    status: "2512.07377 · under review",
+    authors: "Tolga Ok, Arman Sharifi Kolarijani, Mohamad Amin Sharifi Kolarijani, and Peyman Mohajerin Esfahani",
+    links: [
+      { name: "Paper", url: "https://arxiv.org/pdf/2512.07377" },
+    ],
+  },
+  {
+    title: "Rank-One Modified Value Iteration",
+    url: "https://proceedings.mlr.press/v267/kolarijani25a.html",
+    venue: "ICML 2025",
+    authors: "Arman Sharifi Kolarijani, Tolga Ok, Peyman Mohajerin Esfahani, and Mohamad Amin Sharifi Kolarijani",
+    links: [
+      { name: "Paper", url: "https://raw.githubusercontent.com/mlresearch/v267/main/assets/kolarijani25a/kolarijani25a.pdf" },
+      { name: "Code", url: "https://github.com/TolgaOk/r1vi-paper" },
+    ],
+  },
+  {
+    title: "Scalable Kernel Inverse Optimization",
+    url: "https://proceedings.neurips.cc/paper_files/paper/2024/hash/b3f269d610fc0a0972bd4c2f4905165a-Abstract-Conference.html",
+    venue: "NeurIPS 2024",
+    authors: "Youyuan Long, Tolga Ok, Pedro Zattoni Scroccaro, and Peyman Mohajerin Esfahani",
+    links: [
+      { name: "Paper", url: "https://proceedings.neurips.cc/paper_files/paper/2024/file/b3f269d610fc0a0972bd4c2f4905165a-Paper-Conference.pdf" },
+      { name: "Code", url: "https://github.com/Longyouyuan/Scalable-Kernel-Inverse-Optimization" },
+    ],
+  },
+  {
+    title: "Core Skill Decomposition of Complex Wargames with Reinforcement Learning",
+    url: "https://arc.aiaa.org/doi/abs/10.2514/6.2022-2084",
+    venue: "AIAA SciTech 2022",
+    authors: "Kubilay Kağan Kömürcü, Batuhan İnce, Tolga Ok, Emircan Kılıçkaya, and Nazım Kemal Üre",
+    links: [
+      { name: "Paper", url: "https://doi.org/10.2514/6.2022-2084" },
+    ],
   },
 ];
 
@@ -78,15 +113,15 @@ const formatDate = (date: Date) =>
     class="flex flex-col-reverse items-start gap-x-10 gap-y-6 sm:flex-row sm:items-center"
   >
     <div>
-      <h1>Hi, I'm Tolga</h1>
+      <h1>Tolga Ok</h1>
 
       <p>
-        I am interested in reinforcement learning (RL), optimization, and their
-        applications in robotics. Currently, I am doing my PhD at the <a
+        My goal is to make reinforcement learning work out of the box.
+        Towards this goal, I develop mathematically grounded methods and insights, and build tools to facilitate RL experiments.
+        I’m currently a PhD candidate at the <a
           href="https://www.tudelft.nl/me/over/afdelingen/delft-center-for-systems-and-control"
-          >Delft Center for Systems and Control (DCSC)</a
-        > at <a href="https://www.tudelft.nl/">TU Delft</a>, under the
-        supervision of <a href="https://www.dcsc.tudelft.nl/~mohajerin/"
+          >Delft Center for Systems and Control</a
+        > at <a href="https://www.tudelft.nl/">TU Delft</a>, supervised by <a href="https://mohajerinesfahani.github.io/"
           >Peyman Mohajerin Esfahani</a
         > and <a href="https://sites.google.com/view/aminkolarijani/home"
           >Mohamad Amin Sharifi Kolarijani</a
@@ -165,10 +200,11 @@ const formatDate = (date: Date) =>
             {publication.title}
             <span class="text-base text-zinc-500 dark:text-zinc-400">
               {" · "}
-              {publication.venue}
+              <span class="font-bold">{publication.venue}</span>
+              {publication.status && <> · {publication.status}</>}
             </span>
             {publication.links.map((link) => (
-              <a class="text-base" href={link.url}>
+              <a class="ms-2 inline-block text-base" href={link.url}>
                 {link.name}
               </a>
             ))}
