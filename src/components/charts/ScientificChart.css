@@ -1,4 +1,5 @@
-.jaxdp-chart {
+.scientific-chart {
+  color-scheme: light;
   --chart-panel: #ffffff;
   --chart-canvas: #ffffff;
   --chart-control: #e5e7e6;
@@ -26,7 +27,8 @@
   font-family: inherit;
 }
 
-html[data-theme="dark"] .jaxdp-chart {
+html[data-theme="dark"] .scientific-chart {
+  color-scheme: dark;
   --chart-panel: #18181b;
   --chart-canvas: #18181b;
   --chart-control: #303338;
@@ -45,7 +47,8 @@ html[data-theme="dark"] .jaxdp-chart {
 }
 
 @media (prefers-color-scheme: dark) {
-  html[data-theme="device"] .jaxdp-chart {
+  html[data-theme="device"] .scientific-chart {
+    color-scheme: dark;
     --chart-panel: #18181b;
     --chart-canvas: #18181b;
     --chart-control: #303338;
@@ -64,34 +67,42 @@ html[data-theme="dark"] .jaxdp-chart {
   }
 }
 
-.jaxdp-chart .chart-toolbar {
+.scientific-chart .chart-caption {
+  margin-top: 0.85rem;
+  color: var(--chart-muted);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  text-align: left;
+}
+
+.scientific-chart .chart-toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr) auto;
   align-items: end;
   gap: 0.75rem;
 }
 
-.jaxdp-chart .chart-select,
-.jaxdp-chart .chart-scale-control {
+.scientific-chart .chart-select,
+.scientific-chart .chart-scale-control {
   display: grid;
   min-width: 0;
   gap: 0.4rem;
 }
 
-.jaxdp-chart .chart-select {
+.scientific-chart .chart-select {
   position: relative;
 }
 
-.jaxdp-chart .chart-select > span,
-.jaxdp-chart .chart-scale-control > span {
+.scientific-chart .chart-select > span,
+.scientific-chart .chart-scale-control > span {
   color: var(--chart-muted);
   font-size: 0.8rem;
   font-weight: 700;
   line-height: 1;
 }
 
-.jaxdp-chart .chart-select-trigger,
-.jaxdp-chart .chart-scale-buttons button {
+.scientific-chart .chart-select-trigger,
+.scientific-chart .chart-scale-buttons button {
   height: 2.5rem;
   border: 1px solid var(--chart-control-border);
   border-radius: 999px;
@@ -103,7 +114,7 @@ html[data-theme="dark"] .jaxdp-chart {
   line-height: 1;
 }
 
-.jaxdp-chart .chart-select-trigger {
+.scientific-chart .chart-select-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -113,7 +124,7 @@ html[data-theme="dark"] .jaxdp-chart {
   text-align: left;
 }
 
-.jaxdp-chart .chart-select-trigger svg {
+.scientific-chart .chart-select-trigger svg {
   flex: none;
   stroke: currentcolor;
   stroke-linecap: round;
@@ -122,22 +133,22 @@ html[data-theme="dark"] .jaxdp-chart {
   transition: transform 140ms ease;
 }
 
-.jaxdp-chart .chart-select-trigger[aria-expanded="true"] svg {
+.scientific-chart .chart-select-trigger[aria-expanded="true"] svg {
   transform: rotate(180deg);
 }
 
-.jaxdp-chart .chart-select-trigger:hover,
-.jaxdp-chart .chart-scale-buttons button:hover {
+.scientific-chart .chart-select-trigger:hover,
+.scientific-chart .chart-scale-buttons button:hover {
   background: var(--chart-control-hover);
 }
 
-.jaxdp-chart .chart-select-trigger:focus-visible,
-.jaxdp-chart button:focus-visible {
+.scientific-chart .chart-select-trigger:focus-visible,
+.scientific-chart button:focus-visible {
   outline: 3px solid var(--chart-focus);
   outline-offset: 2px;
 }
 
-.jaxdp-chart .chart-select-menu {
+.scientific-chart .chart-select-menu {
   position: absolute;
   z-index: 10;
   top: calc(100% + 0.45rem);
@@ -151,12 +162,12 @@ html[data-theme="dark"] .jaxdp-chart {
   box-shadow: 0 12px 30px rgb(0 0 0 / 0.2);
 }
 
-.jaxdp-chart .chart-select-menu > div {
+.scientific-chart .chart-select-menu > div {
   display: grid;
   gap: 0.15rem;
 }
 
-.jaxdp-chart .chart-select-menu button {
+.scientific-chart .chart-select-menu button {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 1rem;
   align-items: center;
@@ -176,189 +187,189 @@ html[data-theme="dark"] .jaxdp-chart {
   white-space: nowrap;
 }
 
-.jaxdp-chart .chart-select-menu button[data-active="true"] {
+.scientific-chart .chart-select-menu button[data-active="true"] {
   background: var(--chart-control-hover);
 }
 
-.jaxdp-chart .chart-select-menu button[aria-selected="true"] {
+.scientific-chart .chart-select-menu button[aria-selected="true"] {
   font-weight: 720;
 }
 
-.jaxdp-chart .chart-option-mark {
+.scientific-chart .chart-option-mark {
   color: var(--chart-text);
   font-size: 0.9rem;
   font-weight: 800;
   text-align: center;
 }
 
-.jaxdp-chart .chart-scale-buttons {
+.scientific-chart .chart-scale-buttons {
   display: flex;
   gap: 0.4rem;
 }
 
-.jaxdp-chart .chart-scale-buttons button {
+.scientific-chart .chart-scale-buttons button {
   min-width: 6.1rem;
   padding-inline: 0.95rem;
 }
 
-.jaxdp-chart .chart-scale-buttons button span {
+.scientific-chart .chart-scale-buttons button span {
   margin-right: 0.24rem;
   font-variant: small-caps;
   font-weight: 800;
 }
 
-.jaxdp-chart .chart-scale-buttons button[aria-pressed="true"] {
+.scientific-chart .chart-scale-buttons button[aria-pressed="true"] {
   border-color: var(--chart-control-active);
   background: var(--chart-control-active);
   color: var(--chart-control-active-text);
 }
 
-.jaxdp-chart .chart-select-trigger > span {
+.scientific-chart .chart-select-trigger > span {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.jaxdp-chart .benchmark-toolbar {
+.scientific-chart .benchmark-toolbar {
   grid-template-columns: minmax(0, 12rem);
 }
-.jaxdp-chart .chart-plot {
+.scientific-chart .chart-plot {
   position: relative;
   width: 100%;
   margin-top: 1.5rem;
 }
-.jaxdp-chart .chart-plot > svg {
+.scientific-chart .chart-plot > svg {
   display: block;
   width: 100%;
   height: auto;
   overflow: visible;
   touch-action: pan-y;
 }
-.jaxdp-chart .chart-plot text {
+.scientific-chart .chart-plot text {
   font-family: inherit;
 }
-.jaxdp-chart .axis .domain,
-.jaxdp-chart .minor-axis .domain,
-.jaxdp-chart .grid .domain {
+.scientific-chart .axis .domain,
+.scientific-chart .minor-axis .domain,
+.scientific-chart .grid .domain {
   display: none;
 }
-.jaxdp-chart .grid line {
+.scientific-chart .grid line {
   stroke: var(--chart-grid);
   stroke-width: 0.8;
 }
-.jaxdp-chart .axis text {
+.scientific-chart .axis text {
   font-size: calc(15px * var(--figure-font-scale));
   font-weight: 450;
   fill: var(--chart-text);
   font-variant-numeric: tabular-nums;
 }
-.jaxdp-chart .axis line {
+.scientific-chart .axis line {
   stroke: var(--chart-baseline);
   stroke-width: 1;
 }
-.jaxdp-chart .minor-axis line {
+.scientific-chart .minor-axis line {
   stroke: var(--chart-baseline);
   stroke-width: 0.8;
 }
-.jaxdp-chart .scientific-frame {
+.scientific-chart .scientific-frame {
   fill: none;
   stroke: var(--chart-baseline);
   stroke-width: 1.6;
   vector-effect: non-scaling-stroke;
 }
-.jaxdp-chart .axis-label,
-.jaxdp-chart .color-key-label {
+.scientific-chart .axis-label,
+.scientific-chart .color-key-label {
   font-family: inherit;
   font-size: calc(16px * var(--figure-font-scale));
   font-weight: 400;
   fill: var(--chart-text);
 }
-.jaxdp-chart .math-label {
+.scientific-chart .math-label {
   font-family: "STIX Two Math", "Times New Roman", serif;
   font-size: calc(19px * var(--figure-font-scale));
   font-style: italic;
 }
-.jaxdp-chart .trace {
+.scientific-chart .trace {
   fill: none;
   stroke-linecap: butt;
   stroke-linejoin: round;
   vector-effect: non-scaling-stroke;
 }
-.jaxdp-chart .curve-end-label {
+.scientific-chart .curve-end-label {
   font-size: calc(13.5px * var(--figure-font-scale));
   font-weight: 550;
   cursor: pointer;
 }
-.jaxdp-chart .curve-end-label.highlight {
+.scientific-chart .curve-end-label.highlight {
   font-weight: 750;
 }
-.jaxdp-chart .curve-label-connector {
+.scientific-chart .curve-label-connector {
   fill: none;
   stroke-width: 1;
   stroke-opacity: 0.65;
   pointer-events: none;
 }
-.jaxdp-chart .curve-label-connector.highlight {
+.scientific-chart .curve-label-connector.highlight {
   stroke-width: 1.25;
   stroke-opacity: 0.85;
 }
-.jaxdp-chart .benchmark-name {
+.scientific-chart .benchmark-name {
   font-size: calc(15px * var(--figure-font-scale));
   font-weight: 500;
   fill: var(--chart-text);
 }
-.jaxdp-chart .benchmark-time {
+.scientific-chart .benchmark-time {
   font-size: calc(18px * var(--figure-font-scale));
   font-weight: 650;
   font-variant-numeric: tabular-nums;
   fill: var(--chart-text);
 }
-.jaxdp-chart .timing-bar {
+.scientific-chart .timing-bar {
   stroke: var(--chart-baseline);
   stroke-opacity: 0.3;
   stroke-width: 0.75;
 }
-.jaxdp-chart .interval-halo {
+.scientific-chart .interval-halo {
   fill: none;
   stroke: var(--chart-canvas);
   stroke-width: 4.5;
   stroke-linecap: butt;
 }
-.jaxdp-chart .timing-interval {
+.scientific-chart .timing-interval {
   stroke: var(--chart-text);
   stroke-width: 1.6;
   fill: none;
   vector-effect: non-scaling-stroke;
 }
-.jaxdp-chart .benchmark-hit,
-.jaxdp-chart .chart-overlay {
+.scientific-chart .benchmark-hit,
+.scientific-chart .chart-overlay {
   fill: transparent;
   touch-action: pan-y;
 }
-.jaxdp-chart .chart-overlay {
+.scientific-chart .chart-overlay {
   cursor: crosshair;
 }
-.jaxdp-chart .inspect-rule {
+.scientific-chart .inspect-rule {
   stroke: var(--chart-subtle);
   stroke-width: 1;
   stroke-dasharray: 2 4;
   pointer-events: none;
 }
-.jaxdp-chart .benchmark-hit:focus,
-.jaxdp-chart .chart-overlay:focus {
+.scientific-chart .benchmark-hit:focus,
+.scientific-chart .chart-overlay:focus {
   outline: none;
 }
-.jaxdp-chart .benchmark-hit:focus-visible,
-.jaxdp-chart .chart-overlay:focus-visible {
+.scientific-chart .benchmark-hit:focus-visible,
+.scientific-chart .chart-overlay:focus-visible {
   stroke: var(--chart-text);
   stroke-width: 1;
   stroke-dasharray: 3 3;
 }
-.jaxdp-chart .curve-end-label:focus-visible {
+.scientific-chart .curve-end-label:focus-visible {
   outline: 2px solid var(--chart-focus);
   outline-offset: 4px;
 }
-.jaxdp-chart .chart-tooltip {
+.scientific-chart .chart-tooltip {
   display: none;
   position: absolute;
   z-index: 2;
@@ -371,55 +382,55 @@ html[data-theme="dark"] .jaxdp-chart {
   pointer-events: none;
   font-size: calc(12px * var(--figure-font-scale));
 }
-.jaxdp-chart .chart-tooltip p {
+.scientific-chart .chart-tooltip p {
   margin: 0 0 0.35rem;
   font-weight: 650;
 }
-.jaxdp-chart .chart-tooltip > div {
+.scientific-chart .chart-tooltip > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   line-height: 1.8;
 }
-.jaxdp-chart .chart-tooltip strong {
+.scientific-chart .chart-tooltip strong {
   font-weight: 600;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 @media (max-width: 760px) {
-  .jaxdp-chart .axis text {
+  .scientific-chart .axis text {
     font-size: calc(13px * var(--figure-font-scale));
   }
-  .jaxdp-chart .axis-label,
-  .jaxdp-chart .color-key-label {
+  .scientific-chart .axis-label,
+  .scientific-chart .color-key-label {
     font-size: calc(14px * var(--figure-font-scale));
   }
-  .jaxdp-chart .math-label {
+  .scientific-chart .math-label {
     font-size: calc(17px * var(--figure-font-scale));
   }
-  .jaxdp-chart .curve-end-label {
+  .scientific-chart .curve-end-label {
     font-size: calc(12.5px * var(--figure-font-scale));
   }
-  .jaxdp-chart .benchmark-name {
+  .scientific-chart .benchmark-name {
     font-size: calc(13px * var(--figure-font-scale));
   }
-  .jaxdp-chart .benchmark-time {
+  .scientific-chart .benchmark-time {
     font-size: calc(16px * var(--figure-font-scale));
   }
 }
 @media (max-width: 660px) {
-  .jaxdp-chart .chart-toolbar {
+  .scientific-chart .chart-toolbar {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.7rem 0.55rem;
   }
-  .jaxdp-chart .chart-scale-control {
+  .scientific-chart .chart-scale-control {
     grid-column: 1 / -1;
   }
-  .jaxdp-chart .chart-scale-buttons button {
+  .scientific-chart .chart-scale-buttons button {
     flex: 1;
   }
-  .jaxdp-chart .benchmark-toolbar {
+  .scientific-chart .benchmark-toolbar {
     grid-template-columns: minmax(0, 12rem);
   }
 }

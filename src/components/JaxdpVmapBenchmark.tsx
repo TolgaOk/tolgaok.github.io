@@ -1,5 +1,4 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import * as d3 from "d3";
 
 import data from "@/assets/jaxdp/million-update-benchmark.json";
@@ -17,7 +16,7 @@ import {
   text,
   wrapLabel,
 } from "./charts/scientific";
-import "./JaxdpPlanningChart.css";
+import ChartFrame from "./charts/ChartFrame";
 
 const ENVIRONMENT_OPTIONS = data.environments.map((environment) => ({
   value: environment.id,
@@ -247,10 +246,7 @@ export default function JaxdpVmapBenchmark({
   }, [chartId, environment, fontScale, revision, width]);
 
   return (
-    <figure
-      className="jaxdp-chart jaxdp-benchmark not-prose"
-      style={{ "--figure-font-scale": fontScale } as CSSProperties}
-    >
+    <ChartFrame fontScale={fontScale}>
       <div
         className="chart-toolbar benchmark-toolbar"
         aria-label="Benchmark controls"
@@ -267,6 +263,6 @@ export default function JaxdpVmapBenchmark({
         <svg ref={svgRef} role="group" />
         <div className="chart-tooltip" ref={tooltipRef} role="tooltip" />
       </div>
-    </figure>
+    </ChartFrame>
   );
 }

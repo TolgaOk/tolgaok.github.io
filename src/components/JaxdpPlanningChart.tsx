@@ -1,5 +1,4 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import * as d3 from "d3";
 
 import data from "@/assets/jaxdp/planning-comparison.json";
@@ -21,7 +20,7 @@ import {
   power,
 } from "./charts/scientific";
 import type { ChartPoint, ChartScale, CurveSeries } from "./charts/scientific";
-import "./JaxdpPlanningChart.css";
+import ChartFrame from "./charts/ChartFrame";
 
 type Metric = "residual" | "error";
 const ENVIRONMENT_OPTIONS = data.environments.map((environment) => ({
@@ -406,10 +405,7 @@ export default function JaxdpPlanningChart({
   ]);
 
   return (
-    <figure
-      className="jaxdp-chart not-prose"
-      style={{ "--figure-font-scale": fontScale } as CSSProperties}
-    >
+    <ChartFrame fontScale={fontScale}>
       <div className="chart-toolbar" aria-label="Chart controls">
         <ChartSelect
           id={`${chartId}-problem`}
@@ -451,6 +447,6 @@ export default function JaxdpPlanningChart({
         <svg ref={svgRef} role="group" />
         <div className="chart-tooltip" ref={tooltipRef} role="tooltip" />
       </div>
-    </figure>
+    </ChartFrame>
   );
 }

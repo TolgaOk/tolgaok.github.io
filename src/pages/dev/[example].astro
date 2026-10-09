@@ -1,0 +1,20 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro";
+import JaxdpPlanningChart from "@/components/JaxdpPlanningChart";
+import JaxdpVmapBenchmark from "@/components/JaxdpVmapBenchmark";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV
+    ? ["charts"].map((example) => ({ params: { example } }))
+    : [];
+}
+---
+
+<BaseLayout title="Chart examples">
+  <h1>Chart examples</h1>
+  <p>Live references for the shared scientific chart style.</p>
+  <h2>Curves and aligned end labels</h2>
+  <JaxdpPlanningChart fontScale={1.2} client:load />
+  <h2>Bars and uncertainty intervals</h2>
+  <JaxdpVmapBenchmark fontScale={1.2} client:load />
+</BaseLayout>
