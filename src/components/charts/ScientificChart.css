@@ -233,6 +233,179 @@ html[data-theme="dark"] .scientific-chart {
 .scientific-chart .benchmark-toolbar {
   grid-template-columns: minmax(0, 12rem);
 }
+/* Shared control primitives for simulations and phase-plane figures. */
+.scientific-chart .chart-control-panel {
+  padding: 1rem;
+  border: 1px solid var(--chart-border);
+  border-radius: 0.5rem;
+  background: var(--chart-panel);
+}
+.scientific-chart .chart-simulation-controls {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 0.8rem;
+}
+.scientific-chart .chart-simulation-controls > label {
+  display: grid;
+  min-width: 0;
+  gap: 0.4rem;
+  color: var(--chart-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+.scientific-chart .chart-range-control > span {
+  display: flex;
+  justify-content: space-between;
+}
+.scientific-chart .chart-simulation-controls output {
+  color: var(--chart-text);
+  font-variant-numeric: tabular-nums;
+}
+.scientific-chart .chart-simulation-controls select,
+.scientific-chart .chart-simulation-controls input[type="number"],
+.scientific-chart .chart-action-buttons button {
+  width: 100%;
+  min-width: 0;
+  height: 2.5rem;
+  padding-inline: 0.6rem;
+  border: 1px solid var(--chart-control-border);
+  border-radius: 999px;
+  background-color: var(--chart-control);
+  color: var(--chart-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1;
+}
+.scientific-chart .chart-simulation-controls select:hover,
+.scientific-chart .chart-action-buttons button:hover {
+  background-color: var(--chart-control-hover);
+}
+.scientific-chart .chart-simulation-controls input[type="range"] {
+  width: 100%;
+  height: 2.5rem;
+  margin: 0;
+  /* eslint-disable-next-line css/use-baseline -- Unsupported browsers retain usable native range controls. */
+  accent-color: var(--chart-text);
+}
+.scientific-chart .chart-simulation-controls input:focus-visible,
+.scientific-chart .chart-simulation-controls select:focus-visible,
+.scientific-chart .chart-layer-controls input:focus-visible {
+  outline: 3px solid var(--chart-focus);
+  outline-offset: 2px;
+}
+.scientific-chart .chart-phase-plane {
+  overflow: hidden;
+  border: 1px solid var(--chart-border);
+  border-radius: 0.5rem;
+}
+.scientific-chart .chart-action-buttons {
+  display: flex;
+  flex-shrink: 0;
+  gap: 0.5rem;
+}
+.scientific-chart .chart-action-buttons button {
+  width: auto;
+  padding-inline: 1rem;
+  white-space: nowrap;
+}
+.scientific-chart .chart-layer-controls,
+.scientific-chart .chart-layer-controls fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+}
+.scientific-chart .chart-layer-controls {
+  justify-content: center;
+  margin-top: 1rem;
+}
+.scientific-chart .chart-layer-controls fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.scientific-chart .chart-layer-controls label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--chart-text);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+.scientific-chart .chart-layer-controls [data-method="reinforce"] {
+  color: var(--method-reinforce, var(--chart-text));
+}
+.scientific-chart .chart-layer-controls [data-method="pathwise"] {
+  color: var(--method-pathwise, var(--chart-text));
+}
+.scientific-chart .chart-layer-controls input[role="switch"] {
+  appearance: none;
+  position: relative;
+  flex: none;
+  width: 2rem;
+  height: 1.25rem;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--chart-control-border);
+  border-radius: 999px;
+  background: var(--chart-control);
+  color: inherit;
+  cursor: pointer;
+  box-shadow: none;
+}
+.scientific-chart .chart-layer-controls input[role="switch"]::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 0.875rem;
+  height: 0.875rem;
+  border-radius: 50%;
+  background: var(--chart-muted);
+}
+.scientific-chart .chart-layer-controls input[role="switch"]:checked {
+  background: currentcolor;
+}
+.scientific-chart .chart-layer-controls input[role="switch"]:checked::after {
+  transform: translateX(0.75rem);
+  background: var(--chart-canvas);
+}
+@media (forced-colors: active) {
+  .scientific-chart .chart-layer-controls input[role="switch"] {
+    border-color: ButtonText;
+  }
+  .scientific-chart .chart-layer-controls input[role="switch"]:checked {
+    background: Highlight;
+  }
+  .scientific-chart .chart-layer-controls input[role="switch"]::after {
+    background: ButtonText;
+  }
+  .scientific-chart .chart-layer-controls input[role="switch"]:checked::after {
+    background: HighlightText;
+  }
+}
+.scientific-chart .initial-handle {
+  cursor: grab;
+}
+.scientific-chart .initial-handle:active {
+  cursor: grabbing;
+}
+.scientific-chart .initial-handle:focus {
+  outline: none;
+}
+.scientific-chart .initial-handle:focus-visible > circle:first-child {
+  stroke: var(--chart-focus);
+  stroke-width: 5;
+}
+.scientific-chart .chart-error {
+  color: var(--chart-text);
+  padding: 0.75rem;
+  border: 1px solid var(--chart-border);
+}
 .scientific-chart .chart-plot {
   position: relative;
   width: 100%;
@@ -420,6 +593,12 @@ html[data-theme="dark"] .scientific-chart {
   }
 }
 @media (max-width: 660px) {
+  .scientific-chart .chart-simulation-controls {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .scientific-chart .chart-control-panel {
+    padding: 0.6rem;
+  }
   .scientific-chart .chart-toolbar {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
     gap: 0.7rem 0.55rem;
