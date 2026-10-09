@@ -1,0 +1,257 @@
+---
+title: Value gradients and costates
+description: How reward sensitivity travels backward through a stochastic system, and how this differs from REINFORCE.
+date: 2026-10-08
+kind: research
+---
+
+import Header from "@/components/Header.astro";
+import HighlightedSection from "@/components/HighlightedSection.astro";
+import Aside from "@/components/Aside.astro";
+import ValueGradientExplorer from "@/components/ValueGradientExplorer";
+
+<Header title="Value gradients and costates" authors={[{ name: "Tolga Ok" }]} />
+
+<HighlightedSection>
+
+In reinforcement learning, particularly actor-critic algorithms, which lay the foundation of most practical applications, lies the Policy Gradient methods.
+The most basic Policy Gradient method, REINFORCE, is based on Monte Carlo sampling.
+It is a straightfowrad and easy to implement method, but is noteriously known for its sample inefficiency.
+In this post, we discuss a model-based alternative, the Value Gradient method, and its variants, and how they compared to REINFORCE.
+
+
+</HighlightedSection>
+
+## The policy optimization
+
+As typicall in reinforcement learning (maybe boringly so), lets consider a Markov Decision Process (MDP) with states $s_t$, actions $a_t$, and a reward function $r_t \coloneqq r(s_t, a_t)$. Together, they define a trajectory $\tau = (s_0, a_0, r_0, s_1, a_1, \dots)$. The goal is to find a policy $\pi$ that maximizes the expected cumulative reward.
+
+$$
+\argmax_\pi \;\; \mathbb{E}_{\pi, p}\left[\sum_{t=0}^{T} \gamma^t r(s_t, a_t) \right]
+$$
+
+In the above problem, policy $\pi$ influences the objective through the action distribution $\pi(a_t | s_t)$.
+In a way, this implies that we look for the policy that put higher probability on actions that lead to better trajectories.
+Here, we measure the quality of a trajectory by its return defined as
+
+$$
+G(\tau)=\sum_{t \geq 0}\gamma^t r(s_t, a_t).
+$$
+The expectation of return $G(\tau)$ then gives the value function defined by as $V_\pi(s)=\mathbb{E}_{\pi, p}[G(\tau) | s_0 = s]$ and its the objective of the above policy optimization problem.
+
+For a parameterized policy $\pi_\theta$, policy optimization entails to two methods.
+Intuitively, one approach would update $\theta$ in the direction that increases the probability of the actions within the high return trajectories.
+While the other approach would update $\theta$ to change the actions to obtain higher trajectory return.
+The former underlies the intuition behind **REINFORCE**, while the latter underlies the intuition behind **Value Gradient** methods.
+The difference may feel nuanced first, and hopefuly, it will become clearer as we formaly derive the two concepts.
+
+### REINFORCE
+
+REINFORCE obtains a gradient without differentiating the environment or the reward [@williams1992reinforce]. Assume that the initial-state distribution and environment do not depend directly on $\theta$. The trajectory density then factors as
+
+$$
+p_\theta(\tau)=p_0(x_0)\prod_{t=0}^{H-1}\pi_\theta(u_t\mid x_t)\,p(x_{t+1}\mid x_t,u_t).
+$$
+
+If differentiation can pass under the integral and the policy has parameter-independent support, the identity $\nabla p=p\nabla\log p$ gives
+
+$$
+\nabla_\theta J(\theta)
+=\mathbb E_\theta\!\left[
+G(\tau)\sum_{t=0}^{H-1}\nabla_\theta\log\pi_\theta(u_t\mid x_t)
+\right].
+$$
+
+Each likelihood derivative is called a *score*. In this calculation, sampled states and actions are held fixed when taking the scores. The update associates the observed return with actions made more or less likely by a parameter change. It does not ask how those actions would physically perturb the next state.
+
+This freedom comes with a sampling problem. With a binary terminal reward and no baseline, an unsuccessful episode contributes zero to the estimator even when its state lies close to success. Successful episodes can contribute large scores. Reward-to-go and suitable baselines can reduce score-estimator variance without requiring dynamics derivatives [@schulman2015graphs]. The comparison here uses no baselines, allowing us to examine the estimators in their simplest forms rather than compare complete tuned RL algorithms.
+
+## A two-dimensional example
+
+We can isolate reward sensitivity without introducing a policy. Instead of optimizing $\theta$, we optimize the initial state $x_0\in\mathbb R^2$ of a stochastic system. Write $h$ for the time step and $b$ for the drift field. The simulator uses the discrete transitions
+
+$$
+x_{k+1}=m(x_k)+s\varepsilon_k,
+\qquad m(x)=x+h\,b(x),
+\qquad s=\sigma\sqrt h,
+\qquad \varepsilon_k\sim\mathcal N(0,I_2).
+$$
+
+Its reward is $R=\mathbf 1\{x_{H,1}>0\}$, where $x_{H,1}$ is the first coordinate at the final step. Thus $V_0(x_0)=\mathbb E[R\mid x_0]$ is the probability of finishing in the right half-plane. We seek $\nabla_{x_0}V_0(x_0)$, the direction in which a small initial-state change increases that probability. These are Gaussian conditional transitions, not an exact simulation of a continuous-time diffusion.
+
+<ValueGradientExplorer client:load />
+
+The explorer offers coupled wells, three wells, and an inertial well. Its noise scale is fixed at $\sigma=0.10$, its time step at $h=0.02$, and its horizon at $H=64$. Each method curve follows successive steps of size $\alpha\widehat g$, with displacement capped at $0.10$. Samples sets the number of trajectories used to estimate each gradient; the plot previews at most 256. The sampled innovations stay fixed until resampling. A single displayed pair of curves is an illustration, not a statistical ranking.
+
+### REINFORCE for the initial state
+
+The initial-state score has a particularly simple form. Let $A_k=Dm(x_k)=I+h\,Db(x_k)$, where $D$ denotes the Jacobian. When scoring a sampled trajectory, only its first transition factor depends explicitly on $x_0$. Because $x_1-m(x_0)=s\varepsilon_0$, its score is
+
+$$
+\nabla_{x_0}\log p(x_1\mid x_0)
+=A_0^\top\frac{x_1-m(x_0)}{s^2}
+=A_0^\top\frac{\varepsilon_0}{s}.
+$$
+
+One trajectory therefore gives the estimator
+
+$$
+\widehat g_{\mathrm{RF}}=R\,A_0^\top\frac{\varepsilon_0}{s}.
+$$
+
+Although the objective depends on all $H$ transitions, the likelihood derivative scores only the first one. Later states are integration variables held fixed in this derivative. Their influence on the update enters through the terminal reward. This is the same score-function principle used by REINFORCE, applied to an initial-state parameter rather than policy parameters.
+
+## Value gradients and the costate recursion
+
+A value gradient provides local information about future return. For a fixed policy, define $V_t^\theta(x)$ as the expected return from state $x$ at time $t$, with discounting measured from $t$. Its state gradient is
+
+$$
+\lambda_t(x)=\nabla_x V_t^\theta(x).
+$$
+
+For a small perturbation $\delta x$, the first-order value change is $\lambda_t(x)^\top\delta x$. The value tells us how good the state is; its gradient tells us which nearby changes would make it better.
+
+To derive a backward recursion, first consider deterministic dynamics and a differentiable deterministic policy $u=\pi_\theta(x)$. Define the closed-loop transition $F_\theta(x)=f(x,\pi_\theta(x))$ and reward $\ell_\theta(x)=r(x,\pi_\theta(x))$. Suppose these functions and $\rho$ are differentiable. The Bellman recursion becomes
+
+$$
+V_t^\theta(x)=\ell_\theta(x)+\gamma V_{t+1}^\theta(F_\theta(x)),
+\qquad V_H^\theta(x)=\rho(x).
+$$
+
+A state perturbation changes both the immediate reward and the next state. Applying the chain rule to these two changes gives
+
+$$
+\lambda_t(x)=\nabla_x\ell_\theta(x)
++\gamma\,DF_\theta(x)^\top\lambda_{t+1}(F_\theta(x)),
+\qquad \lambda_H(x)=\nabla_x\rho(x).
+$$
+
+Along a trajectory, these backward sensitivity vectors are *costates*. The transpose Jacobian converts sensitivity to the next state into sensitivity to the current state. With column-vector gradients, the policy's state dependence contributes through
+
+$$
+DF_\theta=D_x f+D_u f\,D_x\pi_\theta,
+\qquad
+\nabla_x\ell_\theta=\nabla_x r+(D_x\pi_\theta)^\top\nabla_u r.
+$$
+
+Ignoring these policy derivatives would give the sensitivity of an open-loop action sequence, not the value gradient of the feedback policy. The closed-loop formulation keeps both effects in the backward recursion [@heess2015svg].
+
+Costates also supply the signal for changing policy parameters. Suppose $x_0$ is fixed independently of $\theta$ and $\rho$ has no direct parameter dependence. Along the deterministic trajectory, the parameter gradient is
+
+$$
+\nabla_\theta J(\theta)
+=\sum_{t=0}^{H-1}\gamma^t\left[
+\partial_\theta\ell_\theta(x_t)
++\gamma\,D_\theta F_\theta(x_t)^\top\lambda_{t+1}(x_{t+1})
+\right].
+$$
+
+Here the partial derivatives hold $x_t$ fixed. Each term measures how changing the policy at that step affects immediate reward and future value. The costate accounts for the later consequences, avoiding a separate forward sensitivity calculation for each policy parameter. This is why a state gradient is useful even when the variables we ultimately optimize are policy parameters.
+
+## Reparameterizing the randomness
+
+Random transitions do not by themselves prevent differentiation. Suppose we can write a transition as $x_{t+1}=F_\theta(x_t,\varepsilon_t)$, where the innovations have a fixed distribution independent of $\theta$ and $x_t$. This representation is called *reparameterization*. A sampled innovation is then held fixed while differentiating the transition function. Stochastic policies can be represented similarly using separate action noise [@heess2015svg].
+
+With differentiable rewards and sufficient integrability to interchange differentiation and expectation, the Bellman equation gives
+
+$$
+\lambda_t(x)=\nabla_x\ell_\theta(x)
++\gamma\,\mathbb E_{\varepsilon_t}\!\left[
+D_xF_\theta(x,\varepsilon_t)^\top
+\lambda_{t+1}(F_\theta(x,\varepsilon_t))
+\right].
+$$
+
+We can estimate this gradient using a sampled trajectory and a backward recursion. Set $c_H=\nabla\rho(x_H)$ and
+
+$$
+c_t=\nabla_x\ell_\theta(x_t)
++\gamma\,D_xF_\theta(x_t,\varepsilon_t)^\top c_{t+1}.
+$$
+
+The sample costate $c_t$ is not the expected value gradient $\lambda_t(x_t)$. It is a random estimate whose conditional expectation equals that gradient under the stated assumptions. Averaging sample costates gives a pathwise gradient estimator. The randomness remains in the visited states and their Jacobians; reparameterization does not replace the stochastic system with its mean dynamics.
+
+### The binary reward needs a different terminal condition
+
+The explorer's reward is not differentiable at the success boundary. Away from that boundary, the sampled indicator has derivative zero. Differentiating it along a reparameterized trajectory would therefore give zero almost surely, even where the success probability changes with $x_0$. The smooth-reward recursion cannot simply be applied to this terminal condition [@schulman2015graphs].
+
+For this Gaussian example, we can integrate the last transition exactly. Let $\Phi$ and $\varphi$ be the standard normal cumulative distribution function and density. Conditional on $x_{H-1}=x$, the expected reward is
+
+$$
+q(x)=\mathbb P(x_{H,1}>0\mid x_{H-1}=x)
+=\Phi\!\left(\frac{m_1(x)}s\right).
+$$
+
+The tower property gives $V_0(x_0)=\mathbb E[q(x_{H-1})\mid x_0]$. This is the original success probability, not a new objective with a smoothed reward. Integrating the final innovation exposes a differentiable quantity that was hidden behind the sampled indicator.
+
+Write $e_1=(1,0)^\top$ and $z=m_1(x_{H-1})/s$. The conditional terminal sensitivity is
+
+$$
+c_{H-1}=\nabla q(x_{H-1})
+=A_{H-1}^\top e_1\,\frac{\varphi(z)}s.
+$$
+
+There are no running rewards or discounting in this example, hence $c_k=A_k^\top c_{k+1}$ for earlier steps. Transporting this sensitivity back to the initial state gives
+
+$$
+\widehat g_{\mathrm{PW}}
+=(A_{H-1}\cdots A_0)^\top e_1\,\frac{\varphi(z)}s.
+$$
+
+Every matrix is evaluated on the sampled prefix. The implementation computes this product with forward tangent matrices; the backward costate recursion gives the same vector. Neither computation differentiates the terminal indicator.
+
+## A score at the reward head
+
+We do not have to choose between scoring every relevant stochastic node and differentiating the entire graph. An intermediate estimator uses pathwise transport through the prefix and a score at the final reward distribution. It is not shown in the two-method explorer, but it explains what integrating the final reward removes. Conditional on $x_{H-1}=x$, that distribution is Bernoulli with success probability $q(x)$. Define its probability mass function as $p_r(R\mid x)$ and the prefix Jacobian as $J_{H-1}=\partial x_{H-1}/\partial x_0$. The hybrid estimator is
+
+$$
+\widehat g_{\mathrm{head}}
+=R\,J_{H-1}^\top\nabla_x\log p_r(R\mid x_{H-1}).
+$$
+
+For $R=1$, the score is $\nabla q/q$; for $R=0$, multiplication by $R$ makes the contribution zero. Substituting the Gaussian conditional probability gives
+
+$$
+\widehat g_{\mathrm{head}}
+=R\,(A_{H-1}\cdots A_0)^\top e_1\,
+\frac{\varphi(z)}{s\Phi(z)}.
+$$
+
+This head is exact, not learned. It scores the reward conditional on the *penultimate* state. Conditional on the sampled terminal state, the reward would be deterministic and would not provide this Bernoulli score. Combining score terms with ordinary derivative transport is part of the stochastic computation-graph framework [@schulman2015graphs].
+
+### What the comparison establishes
+
+The relation between this reward-head estimator and pathwise can be established without a visual comparison. Condition on the prefix innovations $\varepsilon_{0:H-2}$. The matrix product and $z$ are then fixed, while $\mathbb E[R\mid\varepsilon_{0:H-2}]=\Phi(z)$. Averaging over the final reward gives
+
+$$
+\mathbb E[\widehat g_{\mathrm{head}}\mid\varepsilon_{0:H-2}]
+=\widehat g_{\mathrm{PW}}.
+$$
+
+Pathwise removes the randomness of the final reward from this hybrid. If the estimators have finite second moments, the total covariance identity yields
+
+$$
+\operatorname{Cov}(\widehat g_{\mathrm{head}})
+=\operatorname{Cov}(\widehat g_{\mathrm{PW}})
++\mathbb E\!\left[
+\operatorname{Cov}(\widehat g_{\mathrm{head}}\mid\varepsilon_{0:H-2})
+\right].
+$$
+
+The last term is positive semidefinite. Thus pathwise has no greater population variance in any fixed direction than this reward-head estimator. This argument does not order either method against full REINFORCE, which scores a different part of the trajectory. It also does not guarantee that a finite-sample ascent step increases true success probability.
+
+<Aside title="Reading the comparison" id="reading-the-comparison">
+
+Try reducing Samples and pressing Resample several times at a fixed initial state. Then change the field or step size. Differences between method curves reflect the current sample, system, and estimator, not a change in the objective. Turning a method off hides its overlays without changing the field or plotting domain. Because ascent curves reuse fixed noise at successive points, they follow a sampled objective or gradient field rather than a sequence of independent gradient estimates.
+
+</Aside>
+
+## Where this leads
+
+The example separates two decisions. One is where to use a likelihood score and where to transport derivatives. The other is whether a random contribution can be integrated out before differentiating. Here the final Gaussian transition permits an exact conditional calculation. A different system may require a score at a discrete decision or a differentiable value estimate at the end of a shorter rollout.
+
+Stochastic value-gradient methods connect this sensitivity calculation to policy learning [@heess2015svg]. Their variants combine dynamics derivatives with value-function estimates over different rollout lengths. Stochastic computation graphs provide the corresponding rules for combining pathwise and score-function contributions [@schulman2015graphs]. These are useful starting points for extending the example to controlled systems and studying which parts of the return should be differentiated, sampled, or integrated out. The explorer establishes the exact-model case; it contains no fitted dynamics model.
+
+## References
+
+[^ref]
