@@ -21,13 +21,26 @@ Always select `.chart-plot > svg` when mounting. A component can also contain th
 
 ## Scientific meaning
 
-There is no policy or fitted model in this explorer. All methods estimate the initial-state gradient of a terminal success probability under exact discrete Gaussian transitions. The figure compares REINFORCE and Pathwise only. Pathwise integrates the final event analytically rather than differentiating a sampled indicator. The numerical source retains other estimators for derivation checks, but the UI and worker requests exclude them.
+There is no policy or fitted model in this explorer. All methods estimate the initial-state gradient of a terminal success probability under exact discrete Gaussian transitions. The figure compares REINFORCE and the pathwise estimator, labeled "Value gradient" in the UI. The pathwise estimator integrates the final event analytically rather than differentiating a sampled indicator. The numerical source retains other estimators for derivation checks, but the UI and worker requests exclude them.
 
 The explorer defaults to Inertial well with 64 samples, and Reset restores both. The inertial starting point is `[-0.55, 0.8]`, shifted left from the original almost-certain-success state to show both terminal outcomes. Switching to Inertial well and pressing Home also use this point. The noise scale is fixed at 0.10, time step at 0.02, and horizon at 64. Field, Samples, Step size, and Steps remain adjustable. Step size and Steps are sliders. The two method switches control their ascent curves; there is no separate ascent-paths toggle. The plot has a thin rounded frame matching the control panel and a 0.7 height-to-width ratio. Noise stays fixed until Resample.
 
 No reference curve is displayed or computed. Thick curves are successive changes to the initial state, not process trajectories. Displacements are capped at 0.10 and curves stop at the plotting boundary without projection. Thin process curves show the selected sample count up to a maximum of 256 and are colored by their terminal outcome. Their opacity decreases with sample count to keep the ascent curves legible. The pale background is a reward region, not a basin of attraction.
 
-REINFORCE is dashed red and Pathwise is solid blue, with equal stroke widths. Blue and all control tokens reuse the website's shared scientific-chart style. Drift streamlines have small internal direction chevrons, following the drawing skill's `streamPlot` example. Spacing, arrow sizes, and fixed-point marks use screen pixels so the mobile plot remains legible rather than compressing the desktop density. There are no separate drift-vector or gradient-arrow overlays. Theme changes recolor existing marks without changing the samples or resetting the initial state.
+REINFORCE is dashed red and the value-gradient curve is solid blue, with equal stroke widths. Blue and all control tokens reuse the website's shared scientific-chart style. Drift streamlines have small internal direction chevrons, following the drawing skill's `streamPlot` example. Spacing, arrow sizes, and fixed-point marks use screen pixels so the mobile plot remains legible rather than compressing the desktop density. There are no separate drift-vector or gradient-arrow overlays. Theme changes recolor existing marks without changing the samples or resetting the initial state.
+
+## Trajectory graph
+
+`src/components/ValueGradientGraph.astro` draws the policy, state, action, and
+reward dependencies. Its **Compute gradient** switch animates reverse flow using
+`src/lib/value-gradients/gradient-flow.mjs`. The schedule waits for downstream and
+local reward contributions before propagating through the policy; it illustrates
+reverse-mode differentiation rather than computing numerical gradients.
+
+The animation pauses outside the viewport and when the document is hidden.
+Reduced-motion mode uses static arrows. On narrow screens, the graph scrolls
+horizontally inside its frame. `tests/gradient-flow.test.mjs` checks the schedule
+and edge progress.
 
 ## Checks
 

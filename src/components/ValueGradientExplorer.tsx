@@ -20,7 +20,7 @@ const SAMPLES = [4, 16, 64, 256, 1024, 4096, 8192].map((count) => ({
 }));
 const METHODS = [
   { value: "reinforce", label: "REINFORCE" },
-  { value: "pathwise", label: "Pathwise" },
+  { value: "pathwise", label: "Value gradient" },
 ];
 
 export default function ValueGradientExplorer() {
@@ -60,7 +60,7 @@ export default function ValueGradientExplorer() {
           <strong>Figure 1.</strong> Initial-state ascent in a stochastic field.
           Gray streamlines show the drift, with arrows indicating its direction.
           Thick dashed red and solid blue curves update the initial state using
-          REINFORCE and Pathwise, respectively, with shared sampled innovations.
+          REINFORCE and value gradients, respectively, with shared sampled innovations.
           Thin curves preview {Math.min(256, Number(samples)).toLocaleString()}{" "}
           sampled process trajectories, colored by terminal reward. The neutral
           dark trajectory is a zero-noise rollout, not an average. Background

@@ -1,0 +1,456 @@
+---
+import "./charts/ScientificChart.css";
+
+const steps = [0, 1, 2];
+const stateX = (step: number) => 132 + step * 210;
+const id = `trajectory-graph-${crypto.randomUUID()}`;
+const edges = steps.flatMap((step) => {
+  const x = stateX(step);
+  return [
+    `M ${x + 34} 270 H ${x + 173}`, // state -> next state
+    `M ${x + 19} 250 L ${x + 37} 231`, // state -> policy
+    `M ${x + 66} 199 L ${x + 83} 180`, // policy -> action
+    `M ${x + 124} 177 L ${x + 188} 247`, // action -> next state
+    `M ${x} 250 V 73`, // state -> reward
+    `M ${x + 86} 137 L ${x + 23} 73`, // action -> reward
+  ];
+});
+// Separate reverse paths keep both flows visible and meet distinct node ports.
+const gradientEdges = steps.flatMap((step) => {
+  const x = stateX(step);
+  return [
+    `M ${x + 176} 278 H ${x + 38}`, // next state -> state
+    `M ${x + 55} 236 Q ${x + 54} 251 ${x + 38} 259`, // policy -> state
+    `M ${x + 101} 181 Q ${x + 96} 200 ${x + 75} 211`, // action -> policy
+    `M ${x + 198} 245 L ${x + 145} 174`, // next state -> action
+    `M ${x - 8} 74 V 246`, // reward -> state
+    `M ${x + 34} 78 L ${x + 97} 132`, // reward -> action
+  ];
+});
+---
+
+<figure
+  class="scientific-chart not-prose trajectory-graph"
+  style="--figure-font-scale: 1.2"
+  data-gradient="false"
+>
+  <div class="chart-layer-controls graph-controls">
+    <label>
+      <input
+        type="checkbox"
+        role="switch"
+        data-gradient-toggle
+        aria-controls={`${id}-svg`}
+      />
+      Compute gradient
+    </label>
+  </div>
+  <div
+    class="graph-scroll"
+    tabindex="0"
+    role="region"
+    aria-label="Trajectory computation graph. Scroll horizontally to explore all steps."
+  >
+    <svg
+      id={`${id}-svg`}
+      viewBox="0 0 850 315"
+      role="img"
+      aria-labelledby={`${id}-title ${id}-description`}
+    >
+      <title id={`${id}-title`}>Computational graph of a trajectory</title>
+      <desc id={`${id}-description`}>
+        A portion of an infinite-horizon trajectory. Dashed edges continue
+        beyond the right edge between state t+3 and action t+3. Each state feeds
+        a circular policy node labeled pi theta, which determines the action.
+        The state and action both determine the next state through the
+        transition model, and both determine the current reward. Noise inputs
+        are omitted. The gradient-flow switch animates return derivatives
+        backward from state t+3. At each step, the local reward contributes to
+        both the action and state derivatives before the policy propagates its
+        contribution to the state. Reduced-motion mode shows static arrows.
+      </desc>
+      <defs>
+        <clipPath id={`${id}-cut`}>
+          <rect x="0" y="0" width="844" height="315"></rect>
+        </clipPath>
+        <marker
+          id={`${id}-arrow`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M 1 1 L 9 5 L 1 9" class="arrowhead"></path>
+        </marker>
+        <marker
+          id={`${id}-gradient-arrow`}
+          viewBox="0 0 10 10"
+          refX="9"
+          refY="5"
+          markerWidth="6"
+          markerHeight="6"
+          orient="auto-start-reverse"
+        >
+          <path d="M 1 1 L 9 5 L 1 9" class="gradient-arrowhead"></path>
+        </marker>
+      </defs>
+
+      <!-- Draw dependencies before nodes so blocks remain visually distinct. -->
+      <g class="edges forward-edges" marker-end={`url(#${id}-arrow)`}>
+        {edges.map((d) => <path d={d} />)}
+      </g>
+      <g
+        class="edges gradient-edges"
+        marker-end={`url(#${id}-gradient-arrow)`}
+        aria-hidden="true"
+      >
+        {
+          gradientEdges.map((d, index) => (
+            <path
+              d={d}
+              data-gradient-step={Math.floor(index / 6)}
+              data-gradient-branch={index % 6}
+            />
+          ))
+        }
+      </g>
+
+      {
+        steps.map((step) => (
+          <>
+            <g
+              class="node policy"
+              data-node={`policy-${step}`}
+              transform={`translate(${stateX(step) + 52}, 214)`}
+            >
+              <circle r="20" />
+              <text y="5">
+                π
+                <tspan class="subscript" dy="4">
+                  θ
+                </tspan>
+              </text>
+            </g>
+            <g
+              class="node reward"
+              data-node={`reward-${step}`}
+              transform={`translate(${stateX(step)}, 50)`}
+            >
+              <rect x="-34" y="-20" width="68" height="40" rx="4" />
+              <text y="7">
+                r
+                <tspan class="subscript" dy="5">
+                  <tspan class="variable">t</tspan>
+                  {step > 0 ? `+${step}` : ""}
+                </tspan>
+              </text>
+            </g>
+            <g
+              class="node action"
+              data-node={`action-${step}`}
+              transform={`translate(${stateX(step) + 105}, 157)`}
+            >
+              <rect x="-34" y="-20" width="68" height="40" rx="4" />
+              <text y="7">
+                a
+                <tspan class="subscript" dy="5">
+                  <tspan class="variable">t</tspan>
+                  {step > 0 ? `+${step}` : ""}
+                </tspan>
+              </text>
+            </g>
+          </>
+        ))
+      }
+      {
+        [0, 1, 2, 3].map((step) => (
+          <g
+            class="node state"
+            data-node={`state-${step}`}
+            transform={`translate(${stateX(step)}, 270)`}
+          >
+            <rect x="-34" y="-20" width="68" height="40" rx="4" />
+            <text y="7">
+              s
+              <tspan class="subscript" dy="5">
+                <tspan class="variable">t</tspan>
+                {step > 0 ? `+${step}` : ""}
+              </tspan>
+            </text>
+          </g>
+        ))
+      }
+      <g class="continuation" clip-path={`url(#${id}-cut)`} aria-hidden="true">
+        <g class="edges forward-edges" marker-end={`url(#${id}-arrow)`}>
+          <path d="M 796 270 H 935"></path>
+          <path d="M 781 250 L 799 231"></path>
+          <path d="M 828 199 L 845 180"></path>
+          <path d="M 762 250 V 73"></path>
+          <path d="M 848 137 L 785 73"></path>
+        </g>
+        <g
+          class="edges gradient-edges"
+          data-gradient-context
+          marker-end={`url(#${id}-gradient-arrow)`}
+        >
+          <path d="M 938 278 H 800"></path>
+          <path d="M 817 236 Q 816 251 800 259"></path>
+          <path d="M 863 181 Q 858 200 837 211"></path>
+          <path d="M 754 74 V 246"></path>
+          <path d="M 796 78 L 859 132"></path>
+        </g>
+        <g class="node reward" transform="translate(762, 50)">
+          <rect x="-34" y="-20" width="68" height="40" rx="4"></rect>
+          <text y="7"
+            >r<tspan class="subscript" dy="5"
+              ><tspan class="variable">t</tspan>+3</tspan
+            ></text
+          >
+        </g>
+        <g class="node policy" transform="translate(814, 214)">
+          <circle r="20"></circle>
+          <text y="5">π<tspan class="subscript" dy="4">θ</tspan></text>
+        </g>
+      </g>
+      <g class="row-labels">
+        <text x="0" y="57">Reward</text>
+        <text x="0" y="164">Action</text>
+        <text x="0" y="277">State</text>
+      </g>
+    </svg>
+  </div>
+  <div class="scroll-hint" aria-hidden="true">
+    Scroll horizontally to follow the trajectory →
+  </div>
+  <figcaption class="chart-caption">
+    Each state feeds the policy, and each state–action pair determines the
+    reward and the next state. The circles represent the policy. Toggle gradient
+    flow to follow return derivatives backward through the graph.
+  </figcaption>
+</figure>
+
+<script>
+  import {
+    createGradientFlowTimeline,
+    gradientFlowProgress,
+  } from "@/lib/value-gradients/gradient-flow.mjs";
+
+  document
+    .querySelectorAll<HTMLElement>(".trajectory-graph")
+    .forEach((figure) => {
+      const toggle = figure.querySelector<HTMLInputElement>(
+        "[data-gradient-toggle]",
+      );
+      if (!toggle) return;
+      const timeline = createGradientFlowTimeline(3);
+      const reducedMotion = window.matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      );
+      const paths = timeline.edges
+        .map((edge) => ({
+          ...edge,
+          element: figure.querySelector<SVGPathElement>(
+            `[data-gradient-step="${edge.step}"][data-gradient-branch="${edge.branch}"]`,
+          )!,
+        }))
+        .map((edge) => ({ ...edge, length: edge.element.getTotalLength() }));
+      const nodes = timeline.nodes.map((node) => ({
+        ...node,
+        element: figure.querySelector<SVGGElement>(
+          `[data-node="${node.key}"]`,
+        )!,
+      }));
+      let frame = 0;
+      let elapsed = 0;
+      let lastTime: number | undefined;
+      let visible = false;
+
+      const clear = () => {
+        paths.forEach(({ element }) => {
+          element.style.removeProperty("stroke-dasharray");
+          element.style.removeProperty("stroke-dashoffset");
+          element.style.removeProperty("marker-end");
+          element.style.removeProperty("opacity");
+        });
+        nodes.forEach(({ element }) => {
+          delete element.dataset.lit;
+        });
+      };
+      const draw = (time: number) => {
+        for (const { element, length, start, duration } of paths) {
+          const progress = gradientFlowProgress(time, start, duration);
+          element.style.opacity = progress > 0 ? "1" : "0";
+          element.style.strokeDasharray = `${length} ${length}`;
+          element.style.strokeDashoffset = String(length * (1 - progress));
+          // Reveal the arrowhead only when the derivative reaches its destination.
+          if (progress === 1) element.style.removeProperty("marker-end");
+          else element.style.markerEnd = "none";
+        }
+        nodes.forEach(({ element, at }) => {
+          element.dataset.lit = String(time >= at);
+        });
+      };
+      const shouldRun = () =>
+        toggle.checked && !reducedMotion.matches && visible && !document.hidden;
+      const tick = (now: number) => {
+        frame = 0;
+        if (!shouldRun()) return;
+        if (lastTime !== undefined) elapsed += now - lastTime;
+        lastTime = now;
+        draw(elapsed % timeline.duration);
+        frame = requestAnimationFrame(tick);
+      };
+      const sync = () => {
+        if (frame) cancelAnimationFrame(frame);
+        frame = 0;
+        lastTime = undefined;
+        if (shouldRun()) frame = requestAnimationFrame(tick);
+      };
+      const update = () => {
+        elapsed = 0;
+        figure.dataset.gradient = String(toggle.checked);
+        figure.dataset.motion =
+          toggle.checked && !reducedMotion.matches ? "running" : "static";
+        clear();
+        if (toggle.checked && !reducedMotion.matches) draw(0);
+        sync();
+      };
+      toggle.addEventListener("change", update);
+      reducedMotion.addEventListener("change", update);
+      document.addEventListener("visibilitychange", sync);
+      const observer = new IntersectionObserver(([entry]) => {
+        visible = entry.isIntersecting;
+        sync();
+      });
+      observer.observe(figure);
+      update();
+    });
+</script>
+
+<style>
+  .trajectory-graph {
+    container-type: inline-size;
+    /* Blues accent; neutral colors, font, width, and caption come from the shared figure style. */
+    --graph-accent: light-dark(#2171b5, #6baed6);
+    --graph-gradient: light-dark(#b91c1c, #f87171);
+  }
+  .graph-scroll {
+    overflow-x: auto;
+  }
+  .graph-scroll:focus-visible {
+    outline: 2px solid var(--chart-focus);
+    outline-offset: -2px;
+  }
+  svg {
+    display: block;
+    width: 100%;
+    min-width: 660px;
+    font-family: inherit;
+  }
+  .edges {
+    fill: none;
+    stroke: var(--chart-baseline);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .arrowhead {
+    fill: none;
+    stroke: var(--chart-baseline);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .node rect,
+  .node circle {
+    fill: var(--chart-canvas);
+    stroke: var(--chart-baseline);
+    stroke-width: 1.6;
+  }
+  .node text {
+    fill: var(--chart-text);
+    text-anchor: middle;
+    font-size: calc(21px * var(--figure-font-scale));
+    font-style: italic;
+    font-weight: 400;
+  }
+  .subscript {
+    font-size: 60%;
+    font-style: normal;
+  }
+  .variable {
+    font-style: italic;
+  }
+  .action rect {
+    fill: color-mix(in srgb, var(--graph-accent) 12%, var(--chart-canvas));
+    stroke: var(--graph-accent);
+  }
+  .action text {
+    fill: var(--graph-accent);
+  }
+  .policy circle {
+    stroke: var(--graph-accent);
+  }
+  .policy text {
+    fill: var(--graph-accent);
+    font-size: calc(15px * var(--figure-font-scale));
+  }
+  .graph-controls input[role="switch"] {
+    color: var(--graph-gradient);
+  }
+  .graph-controls {
+    justify-content: space-between;
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+  }
+  .gradient-edges {
+    display: none;
+  }
+  .gradient-edges {
+    stroke: var(--graph-gradient);
+  }
+  .gradient-arrowhead {
+    fill: none;
+    stroke: var(--graph-gradient);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  [data-gradient="true"] .gradient-edges {
+    display: inline;
+  }
+  [data-motion="running"] [data-gradient-context] {
+    opacity: 0.35;
+  }
+  .node[data-lit="true"] rect,
+  .node[data-lit="true"] circle {
+    stroke: var(--graph-gradient);
+    fill: color-mix(in srgb, var(--graph-gradient) 10%, var(--chart-canvas));
+  }
+  .node[data-lit="true"] text {
+    fill: var(--graph-gradient);
+  }
+  .continuation .edges,
+  .continuation .node rect,
+  .continuation .node circle {
+    stroke-dasharray: 4 4;
+  }
+  .row-labels {
+    fill: var(--chart-text);
+    font-size: calc(16px * var(--figure-font-scale));
+    font-weight: 400;
+  }
+  .scroll-hint {
+    display: none;
+    margin-top: 0.5rem;
+    color: var(--chart-muted);
+    font-size: 0.8rem;
+  }
+  @container (max-width: 660px) {
+    .scroll-hint {
+      display: block;
+    }
+  }
+</style>
