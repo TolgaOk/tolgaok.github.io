@@ -12,6 +12,7 @@ import react from "@astrojs/react";
 import astroExpressiveCode from "astro-expressive-code";
 import { unified } from "@astrojs/markdown-remark";
 import { pluginIPython } from "./src/plugins/ipython";
+import { rehypeReferenceLinks } from "./src/plugins/reference-links";
 
 // https://astro.build/config
 export default defineConfig({
@@ -31,6 +32,7 @@ export default defineConfig({
             linkCitations: true,
           },
         ],
+        rehypeReferenceLinks,
       ],
     }),
   },

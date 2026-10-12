@@ -89,6 +89,28 @@ main .framed-panel .katex-display {
   margin-left: 2rem;
 }
 
+.csl-entry .reference-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.csl-entry .reference-link svg {
+  display: inline-block;
+  vertical-align: -0.1em;
+  color: color-mix(in oklab, currentColor 60%, transparent);
+}
+
+.reference-link-tail {
+  white-space: nowrap;
+}
+
+.csl-entry .reference-link:hover,
+.csl-entry .reference-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, currentColor 50%, transparent);
+  text-underline-offset: 4px;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
