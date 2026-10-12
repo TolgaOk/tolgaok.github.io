@@ -10,6 +10,22 @@ npm run dev      # http://localhost:4321, hot reload
 npm run build    # type-check + static build into dist/
 ```
 
+## Checks and interactive figures
+
+```sh
+npm test        # numerical and gradient-flow tests
+npm run check   # Astro and TypeScript diagnostics
+npm run lint    # ESLint
+```
+
+With `npm run dev` running, `npm run test:browser` checks the value-gradient
+explorer in Chrome, including keyboard controls and desktop/mobile themes.
+See [the explorer guide](docs/charts/value-gradients.md) for browser setup and
+screenshot checks.
+
+The development-only galleries are `/dev/charts/` and `/dev/value-gradients/`.
+New figures should reuse the [shared chart components](docs/charts/README.md).
+
 ## Adding a post
 
 Create `src/content/posts/<slug>.mdx`. Plain markdown is sufficient: headings, lists, tables, code fences, `$math$`, and `[@bibkey]` citations (from `bibliography.bib`) all work with no imports. The page appears at `/<kind>/<slug>/` and is listed on the landing page automatically.

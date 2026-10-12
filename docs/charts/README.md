@@ -9,6 +9,7 @@ The JaxDP figures are the reference implementations for this style.
 - `ScientificChart.css` owns typography, controls, axes, grids, labels, tooltips, and light/dark themes under `.scientific-chart`.
 - `useChartLayout.ts` observes container width, theme changes, and font loading so D3 can redraw.
 - `ChartSelect.tsx` provides the accessible dropdown used by chart controls.
+- `streamlines.mjs` traces evenly spaced integral curves for two-dimensional phase planes.
 - `scientific.ts` provides SVG setup, detached axes, axis titles, color keys, label layout, palettes, and tooltip positioning.
 
 Keep dataset loading and scientific calculations in the consuming component.
@@ -22,6 +23,7 @@ This route exists only in development and is excluded from production builds.
 
 - `src/components/JaxdpPlanningChart.tsx`: curves, log/linear scales, aligned end labels, and keyboard inspection.
 - `src/components/JaxdpVmapBenchmark.tsx`: horizontal bars, capped uncertainty intervals, and a speed color scale.
+- `/dev/value-gradients/`: a stochastic phase plane with streamlines, toggle switches, sliders, and cancellable ascent curves. See [the explorer guide](value-gradients.md).
 
 In an MDX post:
 

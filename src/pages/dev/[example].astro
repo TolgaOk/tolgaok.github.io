@@ -2,19 +2,31 @@
 import BaseLayout from "@/layouts/BaseLayout.astro";
 import JaxdpPlanningChart from "@/components/JaxdpPlanningChart";
 import JaxdpVmapBenchmark from "@/components/JaxdpVmapBenchmark";
+import ValueGradientExplorer from "@/components/ValueGradientExplorer";
 
 export function getStaticPaths() {
   return import.meta.env.DEV
-    ? ["charts"].map((example) => ({ params: { example } }))
+    ? ["charts", "value-gradients"].map((example) => ({ params: { example } }))
     : [];
 }
+const isValueGradients = Astro.params.example === "value-gradients";
 ---
 
-<BaseLayout title="Chart examples">
-  <h1>Chart examples</h1>
-  <p>Live references for the shared scientific chart style.</p>
-  <h2>Curves and aligned end labels</h2>
-  <JaxdpPlanningChart fontScale={1.2} client:load />
-  <h2>Bars and uncertainty intervals</h2>
-  <JaxdpVmapBenchmark fontScale={1.2} client:load />
+<BaseLayout
+  title={isValueGradients ? "Value-gradient figure" : "Chart examples"}
+>
+  {
+    isValueGradients ? (
+      <ValueGradientExplorer client:load />
+    ) : (
+      <>
+        <h1>Chart examples</h1>
+        <p>Live references for the shared scientific chart style.</p>
+        <h2>Curves and aligned end labels</h2>
+        <JaxdpPlanningChart fontScale={1.2} client:load />
+        <h2>Bars and uncertainty intervals</h2>
+        <JaxdpVmapBenchmark fontScale={1.2} client:load />
+      </>
+    )
+  }
 </BaseLayout>
