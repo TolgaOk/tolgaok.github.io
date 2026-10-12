@@ -2,11 +2,9 @@
   color-scheme: light;
   --chart-panel: #ffffff;
   --chart-canvas: #ffffff;
-  --chart-control: #e5e7e6;
-  --chart-control-hover: #dadddc;
-  --chart-control-active: #303338;
-  --chart-control-active-text: #ffffff;
-  --chart-control-border: #858a92;
+  --chart-control: var(--control-background, ButtonFace);
+  --chart-control-hover: var(--control-hover, ButtonFace);
+  --chart-control-border: var(--control-border, ButtonBorder);
   --chart-menu: #ffffff;
   --chart-text: #202226;
   --chart-muted: #5f646b;
@@ -14,7 +12,7 @@
   --chart-border: #c7cacf;
   --chart-grid: #e5e9f0;
   --chart-baseline: #586273;
-  --chart-focus: #006da8;
+  --chart-focus: var(--control-focus, Highlight);
 
   box-sizing: border-box;
   width: 100%;
@@ -31,11 +29,6 @@ html[data-theme="dark"] .scientific-chart {
   color-scheme: dark;
   --chart-panel: #18181b;
   --chart-canvas: #18181b;
-  --chart-control: #303338;
-  --chart-control-hover: #3a3e44;
-  --chart-control-active: #f0f1f3;
-  --chart-control-active-text: #202226;
-  --chart-control-border: #767c85;
   --chart-menu: #2a2d31;
   --chart-text: #f3f4f6;
   --chart-muted: #b7bbc2;
@@ -43,7 +36,6 @@ html[data-theme="dark"] .scientific-chart {
   --chart-border: #484c53;
   --chart-grid: #303a4b;
   --chart-baseline: #96a6be;
-  --chart-focus: #5ab9e9;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -51,11 +43,6 @@ html[data-theme="dark"] .scientific-chart {
     color-scheme: dark;
     --chart-panel: #18181b;
     --chart-canvas: #18181b;
-    --chart-control: #303338;
-    --chart-control-hover: #3a3e44;
-    --chart-control-active: #f0f1f3;
-    --chart-control-active-text: #202226;
-    --chart-control-border: #767c85;
     --chart-menu: #2a2d31;
     --chart-text: #f3f4f6;
     --chart-muted: #b7bbc2;
@@ -63,7 +50,6 @@ html[data-theme="dark"] .scientific-chart {
     --chart-border: #484c53;
     --chart-grid: #303a4b;
     --chart-baseline: #96a6be;
-    --chart-focus: #5ab9e9;
   }
 }
 
@@ -101,19 +87,6 @@ html[data-theme="dark"] .scientific-chart {
   line-height: 1;
 }
 
-.scientific-chart .chart-select-trigger,
-.scientific-chart .chart-scale-buttons button {
-  height: 2.5rem;
-  border: 1px solid var(--chart-control-border);
-  border-radius: 999px;
-  background: var(--chart-control);
-  color: var(--chart-text);
-  font-family: inherit;
-  font-size: 0.9rem;
-  font-weight: 650;
-  line-height: 1;
-}
-
 .scientific-chart .chart-select-trigger {
   display: flex;
   align-items: center;
@@ -137,12 +110,6 @@ html[data-theme="dark"] .scientific-chart {
   transform: rotate(180deg);
 }
 
-.scientific-chart .chart-select-trigger:hover,
-.scientific-chart .chart-scale-buttons button:hover {
-  background: var(--chart-control-hover);
-}
-
-.scientific-chart .chart-select-trigger:focus-visible,
 .scientific-chart button:focus-visible {
   outline: 3px solid var(--chart-focus);
   outline-offset: 2px;
@@ -216,12 +183,6 @@ html[data-theme="dark"] .scientific-chart {
   margin-right: 0.24rem;
   font-variant: small-caps;
   font-weight: 800;
-}
-
-.scientific-chart .chart-scale-buttons button[aria-pressed="true"] {
-  border-color: var(--chart-control-active);
-  background: var(--chart-control-active);
-  color: var(--chart-control-active-text);
 }
 
 .scientific-chart .chart-select-trigger > span {

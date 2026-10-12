@@ -108,7 +108,7 @@ export default function ChartSelect({
         ref={triggerRef}
         type="button"
         role="combobox"
-        className="chart-select-trigger"
+        className="control-button chart-select-trigger"
         aria-activedescendant={
           open ? `${listboxId}-option-${activeIndex}` : undefined
         }

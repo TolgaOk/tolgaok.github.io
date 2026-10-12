@@ -1,0 +1,66 @@
+/* Shared pill controls, using the JaxDP chart palette and dimensions. */
+:root {
+  --control-background: #e5e7e6;
+  --control-hover: #dadddc;
+  --control-active: #303338;
+  --control-active-text: #ffffff;
+  --control-border: #858a92;
+  --control-text: #202226;
+  --control-focus: #006da8;
+}
+
+html[data-theme="dark"] {
+  --control-background: #303338;
+  --control-hover: #3a3e44;
+  --control-active: #f0f1f3;
+  --control-active-text: #202226;
+  --control-border: #767c85;
+  --control-text: #f3f4f6;
+  --control-focus: #5ab9e9;
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-theme="device"] {
+    --control-background: #303338;
+    --control-hover: #3a3e44;
+    --control-active: #f0f1f3;
+    --control-active-text: #202226;
+    --control-border: #767c85;
+    --control-text: #f3f4f6;
+    --control-focus: #5ab9e9;
+  }
+}
+
+.control-button {
+  height: 2.5rem;
+  padding-inline: 0.95rem;
+  border: 1px solid var(--control-border);
+  border-radius: 999px;
+  background: var(--control-background);
+  color: var(--control-text);
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.control-button:hover {
+  background: var(--control-hover);
+}
+
+.control-button:is([aria-pressed="true"], [role="tab"][aria-selected="true"]) {
+  border-color: var(--control-active);
+  background: var(--control-active);
+  color: var(--control-active-text);
+}
+
+.control-button:focus-visible {
+  outline: 3px solid var(--control-focus);
+  outline-offset: 2px;
+}
+
+.control-button:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}

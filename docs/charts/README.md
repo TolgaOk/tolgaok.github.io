@@ -6,7 +6,7 @@ The JaxDP figures are the reference implementations for this style.
 ## Shared pieces
 
 - `ChartFrame.tsx` provides the figure container, loads the shared CSS, and sets the font scale (default 1.2).
-- `ScientificChart.css` owns typography, controls, axes, grids, labels, tooltips, and light/dark themes under `.scientific-chart`.
+- `ScientificChart.css` owns chart typography, control layout, axes, grids, labels, tooltips, and light/dark themes under `.scientific-chart`. Pill buttons and their color tokens are shared with tabs through `src/styles/controls.css`, loaded by the global stylesheet.
 - `useChartLayout.ts` observes container width, theme changes, and font loading so D3 can redraw.
 - `ChartSelect.tsx` provides the accessible dropdown used by chart controls.
 - `streamlines.mjs` traces evenly spaced integral curves for two-dimensional phase planes.

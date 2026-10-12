@@ -426,6 +426,7 @@ export default function JaxdpPlanningChart({
           <div className="chart-scale-buttons">
             <button
               type="button"
+              className="control-button"
               aria-pressed={logX}
               aria-label={`Use ${logX ? "linear" : "logarithmic"} x-axis`}
               onClick={() => setLogX((current) => !current)}
@@ -434,6 +435,7 @@ export default function JaxdpPlanningChart({
             </button>
             <button
               type="button"
+              className="control-button"
               aria-pressed={logY}
               aria-label={`Use ${logY ? "linear" : "logarithmic"} y-axis`}
               onClick={() => setLogY((current) => !current)}
