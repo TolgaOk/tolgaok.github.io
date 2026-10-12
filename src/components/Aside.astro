@@ -4,25 +4,70 @@ import { Icon } from "astro-icon/components";
 interface Props {
   title: string;
   id?: string;
+  /** Background, technical details, cautions, or mathematical results. */
+  variant?: "info" | "details" | "warning" | "theorem";
 }
 
-const { title, id } = Astro.props;
+const { title, id, variant = "info" } = Astro.props;
+
+const styles = {
+  info: {
+    icon: "ri:information-line",
+    frame:
+      "border-blue-200 bg-blue-50/60 dark:border-blue-400/35 dark:bg-blue-400/10",
+    header:
+      "border-blue-200 bg-blue-100/70 text-blue-900 dark:border-blue-400/35 dark:bg-blue-400/20 dark:text-blue-200",
+    iconColor: "text-blue-600 dark:text-blue-300",
+  },
+  warning: {
+    icon: "ri:alert-line",
+    frame:
+      "border-amber-200 bg-amber-50/60 dark:border-amber-400/35 dark:bg-amber-400/10",
+    header:
+      "border-amber-200 bg-amber-100/70 text-amber-900 dark:border-amber-400/35 dark:bg-amber-400/20 dark:text-amber-200",
+    iconColor: "text-amber-700 dark:text-amber-300",
+  },
+  theorem: {
+    icon: "ri:book-open-line",
+    frame:
+      "border-violet-200 bg-violet-50/60 dark:border-violet-400/35 dark:bg-violet-400/10",
+    header:
+      "border-violet-200 bg-violet-100/70 text-violet-900 dark:border-violet-400/35 dark:bg-violet-400/20 dark:text-violet-200",
+    iconColor: "text-violet-600 dark:text-violet-300",
+  },
+  details: {
+    icon: "ri:file-list-3-line",
+    frame: "border-frame-border bg-frame-body",
+    header:
+      "border-frame-border bg-frame-header text-zinc-700 dark:text-zinc-200",
+    iconColor: "text-zinc-500 dark:text-zinc-400",
+  },
+}[variant];
 ---
 
 <aside
   id={id}
   aria-label={title}
-  class="my-8 rounded-r-md border-s-[3px] border-blue-600 bg-blue-50/60 px-5 py-4 text-base leading-relaxed text-zinc-700 dark:border-blue-400 dark:bg-blue-400/[0.08] dark:text-zinc-300"
+  class:list={[
+    "framed-panel my-8 scroll-mt-6 overflow-hidden rounded-md border text-base leading-relaxed text-zinc-700 dark:text-zinc-300",
+    styles.frame,
+  ]}
 >
   <div
-    class="not-prose mb-3 flex items-center gap-2 text-sm font-semibold text-blue-800 dark:text-blue-300"
+    class:list={[
+      "not-prose flex items-center gap-2 border-b px-5 py-2 text-sm font-semibold",
+      styles.header,
+    ]}
     aria-hidden="true"
   >
-    <Icon name="ri:information-line" class="size-4 shrink-0" />
+    <Icon
+      name={styles.icon}
+      class:list={["size-4 shrink-0", styles.iconColor]}
+    />
     <span>{title}</span>
   </div>
   <div
-    class="[&>:first-child]:mt-0 [&>:last-child]:mb-0 [&>p]:my-0 [&>p+p]:mt-3"
+    class="px-5 py-4 [&>:first-child]:mt-0 [&>:last-child]:mb-0 [&>p]:my-0 [&>p+p]:mt-3"
   >
     <slot />
   </div>

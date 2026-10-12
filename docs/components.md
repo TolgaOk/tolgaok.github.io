@@ -59,6 +59,23 @@ import cover from "./assets/cover.png";
 
 Store cover **images** in `./src/assets/` so they're optimized (AVIF, responsive sizes) just like figures. **Videos** are served as-is — Astro doesn't optimize video — so keep them short and well-compressed (a muted, looping, controls-free clip works well as a backdrop). The cover fills the width of the page and the height of the header, cropping to cover the area. The header text is shown in white over a subtle dark overlay with a text shadow, so it stays legible regardless of the page's color theme — pick a cover that looks good behind white text.
 
+## Asides
+
+Use `Aside` for supporting explanations without interrupting the main text.
+Its `title` is required; `id` provides a link target. The optional `variant` is
+`info` (the default), `details`, `warning`, or `theorem`.
+
+```mdx
+import Aside from "@/components/Aside.astro";
+
+<Aside title="Simulation details" id="simulation-details" variant="details">
+  The sampled noise stays fixed until you press Resample.
+</Aside>
+```
+
+The `details` variant shares the code-block frame colors. Display equations
+stay inside the panel and scroll horizontally when needed.
+
 ## Videos
 
 By default, videos displayed using the `Video` component will be muted and play automatically. To display a video that contains audio, I recommend the following settings:

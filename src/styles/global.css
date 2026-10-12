@@ -52,6 +52,36 @@ main .katex-display {
   margin-inline: auto;
 }
 
+/* Framed panels share the code-block frame colors set in astro.config.ts. */
+:root {
+  --frame-border: #d7dce2;
+  --frame-header: #e6e9ed;
+  --frame-body: #f6f7f8;
+}
+
+[data-theme="dark"] {
+  --frame-border: #3b414a;
+  --frame-header: #2d3239;
+  --frame-body: #22252a;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme="device"] {
+    --frame-border: #3b414a;
+    --frame-header: #2d3239;
+    --frame-body: #22252a;
+  }
+}
+
+/* Display math stays inside a framed panel instead of bleeding to the page edge. */
+main .framed-panel .katex-display {
+  margin-inline: 0;
+}
+
+.framed-panel .katex-display > .katex > .katex-html {
+  padding-inline: 0;
+}
+
 /* Bibliography */
 .csl-entry {
   margin-block: 1.5rem;
@@ -87,6 +117,9 @@ main .katex-display {
   --color-border: var(--border);
   --color-input: var(--input);
   --color-outline: var(--outline);
+  --color-frame-border: var(--frame-border);
+  --color-frame-header: var(--frame-header);
+  --color-frame-body: var(--frame-body);
 
   --radius-xs: calc(var(--radius) - 0.375rem);
   --radius-sm: calc(var(--radius) - 0.25rem);
