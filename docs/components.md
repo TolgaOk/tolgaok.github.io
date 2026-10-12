@@ -59,6 +59,14 @@ import cover from "./assets/cover.png";
 
 Store cover **images** in `./src/assets/` so they're optimized (AVIF, responsive sizes) just like figures. **Videos** are served as-is — Astro doesn't optimize video — so keep them short and well-compressed (a muted, looping, controls-free clip works well as a backdrop). The cover fills the width of the page and the height of the header, cropping to cover the area. The header text is shown in white over a subtle dark overlay with a text shadow, so it stays legible regardless of the page's color theme — pick a cover that looks good behind white text.
 
+## Tabs and chart buttons
+
+Tab triggers and JaxDP chart controls use `.control-button` from
+`src/styles/controls.css`, loaded by the global stylesheet. It owns their pill
+shape, typography, borders, selected state, hover state, and focus outline in
+light, dark, and device themes. Keep common button changes there rather than in
+individual posts. Tabs retain their arrow-key, Home, and End navigation.
+
 ## Asides
 
 Use `Aside` for supporting explanations without interrupting the main text.

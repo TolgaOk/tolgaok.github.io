@@ -57,6 +57,7 @@ optimizes them.
 - Landing page (bio, buttons, post list, publications): `src/pages/index.astro`
 - Publications: edit the `publications` array in `src/pages/index.astro`
 - Shared page shell (nav, head, footer): `src/layouts/BaseLayout.astro`
+- Shared tab and chart button styling: `src/styles/controls.css`
 - Post route: `src/pages/[kind]/[slug].astro`
 
 ## Deploy
