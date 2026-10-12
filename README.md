@@ -64,4 +64,8 @@ optimizes them.
 
 Push to `main`. GitHub Actions (`.github/workflows/astro.yml`) builds and
 publishes to GitHub Pages; the repo's Pages source must be set to "GitHub
-Actions".
+Actions". The `github-pages` environment must allow deployments from `main`.
+
+The previous Quartz site is retained on `master`. The Astro migration joins
+both Git histories without rewriting either; keep `master` as the old-site
+archive and use `main` for Astro development and deployment.
