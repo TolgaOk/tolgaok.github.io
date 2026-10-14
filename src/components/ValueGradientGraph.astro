@@ -1,32 +1,135 @@
 ---
 import "./charts/ScientificChart.css";
 
+// Layout: states and transition blocks on the bottom row, actions and policy blocks
+// in the middle, rewards on top. Every connector is horizontal or vertical with
+// rounded elbows, and one trunk per state forks into the policy and the reward.
+const X0 = 58;
+const DX = 232;
+const R = 24; // variable radius
+const P = 15; // half-size of a function block
+const CORNER = 14;
+const GAP = 3; // space between an arrow tip and its node
+const Y = { reward: 40, action: 148, state: 262 };
 const steps = [0, 1, 2];
-const stateX = (step: number) => 132 + step * 210;
 const id = `trajectory-graph-${crypto.randomUUID()}`;
-const edges = steps.flatMap((step) => {
-  const x = stateX(step);
-  return [
-    `M ${x + 34} 270 H ${x + 173}`, // state -> next state
-    `M ${x + 19} 250 L ${x + 37} 231`, // state -> policy
-    `M ${x + 66} 199 L ${x + 83} 180`, // policy -> action
-    `M ${x + 124} 177 L ${x + 188} 247`, // action -> next state
-    `M ${x} 250 V 73`, // state -> reward
-    `M ${x + 86} 137 L ${x + 23} 73`, // action -> reward
+
+type Point = [number, number];
+
+/** Polyline with rounded corners, ending GAP before its last point. */
+function rounded(points: Point[]) {
+  const pts = points.map(([x, y]) => [x, y] as Point);
+  const [end, before] = [pts.at(-1)!, pts.at(-2)!];
+  end[0] -= Math.sign(end[0] - before[0]) * GAP;
+  end[1] -= Math.sign(end[1] - before[1]) * GAP;
+  let d = `M ${pts[0][0]} ${pts[0][1]}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const [p, c, n] = [pts[i - 1], pts[i], pts[i + 1]];
+    const into = Math.min(CORNER, Math.hypot(c[0] - p[0], c[1] - p[1]) / 2);
+    const out = Math.min(CORNER, Math.hypot(n[0] - c[0], n[1] - c[1]) / 2);
+    const a: Point = [
+      c[0] - Math.sign(c[0] - p[0]) * into,
+      c[1] - Math.sign(c[1] - p[1]) * into,
+    ];
+    const b: Point = [
+      c[0] + Math.sign(n[0] - c[0]) * out,
+      c[1] + Math.sign(n[1] - c[1]) * out,
+    ];
+    d += ` L ${a[0]} ${a[1]} Q ${c[0]} ${c[1]} ${b[0]} ${b[1]}`;
+  }
+  return `${d} L ${end[0]} ${end[1]}`;
+}
+
+const layout = steps.map((step) => {
+  const x = X0 + step * DX;
+  const xa = x + DX / 2;
+  const xm = x + DX / 4 + 4;
+  const nodes = {
+    state: [x, Y.state] as Point,
+    action: [xa, Y.action] as Point,
+    reward: [xa, Y.reward] as Point,
+    policy: [xm, Y.action] as Point,
+    transition: [xa, Y.state] as Point,
+  };
+  // Forward points of each edge; the gradient path reverses them. Branch numbers
+  // match GRADIENT_BRANCH in gradient-flow.mjs.
+  const raw: { branch: number; points: Point[] }[] = [
+    {
+      branch: 0,
+      points: [
+        [xa + P, Y.state],
+        [x + DX - R, Y.state],
+      ],
+    }, // transition -> next state
+    {
+      branch: 1,
+      points: [
+        [x + R, Y.state],
+        [xa - P, Y.state],
+      ],
+    }, // state -> transition
+    {
+      branch: 2,
+      points: [
+        [xa, Y.action + R],
+        [xa, Y.state - P],
+      ],
+    }, // action -> transition
+    {
+      branch: 3,
+      points: [
+        [xa, Y.action - R],
+        [xa, Y.reward + R],
+      ],
+    }, // action -> reward
+    {
+      branch: 4,
+      points: [
+        [x, Y.state - R],
+        [x, Y.reward],
+        [xa - R, Y.reward],
+      ],
+    }, // state -> reward
+    {
+      branch: 5,
+      points: [
+        [xm + P, Y.action],
+        [xa - R, Y.action],
+      ],
+    }, // policy -> action
+    {
+      branch: 6,
+      points: [
+        [x, Y.state - R],
+        [x, Y.action],
+        [xm - P, Y.action],
+      ],
+    }, // state -> policy
   ];
+  const edges = raw.map((edge) => ({
+    ...edge,
+    forward: rounded(edge.points),
+    gradient: rounded([...edge.points].reverse()),
+  }));
+  return { step, nodes, edges };
 });
-// Separate reverse paths keep both flows visible and meet distinct node ports.
-const gradientEdges = steps.flatMap((step) => {
-  const x = stateX(step);
-  return [
-    `M ${x + 176} 278 H ${x + 38}`, // next state -> state
-    `M ${x + 55} 236 Q ${x + 54} 251 ${x + 38} 259`, // policy -> state
-    `M ${x + 101} 181 Q ${x + 96} 200 ${x + 75} 211`, // action -> policy
-    `M ${x + 198} 245 L ${x + 145} 174`, // next state -> action
-    `M ${x - 8} 74 V 246`, // reward -> state
-    `M ${x + 34} 78 L ${x + 97} 132`, // reward -> action
-  ];
-});
+const last: Point = [X0 + 3 * DX, Y.state];
+const width = last[0] + 80;
+const height = 296;
+// The chain continues past the last state: rightward and up its trunk.
+const ends: Record<string, Point> = {
+  stateRight: [last[0] + R, Y.state],
+  edge: [width - 6, Y.state],
+  stateTop: [last[0], Y.state - R],
+  above: [last[0], Y.action + 6],
+};
+const continuation = {
+  right: rounded([ends.stateRight, ends.edge]),
+  up: rounded([ends.stateTop, ends.above]),
+  rightGradient: rounded([ends.edge, ends.stateRight]),
+  upGradient: rounded([ends.above, ends.stateTop]),
+};
+const sub = (step: number) => (step > 0 ? `+${step}` : "");
 ---
 
 <figure
@@ -53,171 +156,166 @@ const gradientEdges = steps.flatMap((step) => {
   >
     <svg
       id={`${id}-svg`}
-      viewBox="0 0 850 315"
+      viewBox={`0 0 ${width} ${height}`}
       role="img"
       aria-labelledby={`${id}-title ${id}-description`}
     >
       <title id={`${id}-title`}>Computational graph of a trajectory</title>
       <desc id={`${id}-description`}>
-        A portion of an infinite-horizon trajectory. Dashed edges continue
-        beyond the right edge between state t+3 and action t+3. Each state feeds
-        a circular policy node labeled pi theta, which determines the action.
-        The state and action both determine the next state through the
-        transition model, and both determine the current reward. Noise inputs
-        are omitted. The gradient-flow switch animates return derivatives
-        backward from state t+3. At each step, the local reward contributes to
-        both the action and state derivatives before the policy propagates its
-        contribution to the state. Reduced-motion mode shows static arrows.
+        Three steps of a trajectory from state s t to state s t+3, continuing to
+        the right with dashed lines. Along the bottom row, each state and the
+        action above it feed a square transition block f, which produces the
+        next state. From each state, one line rises and forks: one branch enters
+        a square policy block mu theta, which produces the action, and the other
+        continues up to the reward. Each action also feeds its reward. The
+        gradient switch animates return derivatives backward along the same
+        lines, starting from state s t+3, so that the derivatives from the
+        reward and from the policy merge at the fork on their way back into each
+        state. Reduced-motion mode shows the reversed lines without animation.
       </desc>
       <defs>
-        <clipPath id={`${id}-cut`}>
-          <rect x="0" y="0" width="844" height="315"></rect>
-        </clipPath>
         <marker
-          id={`${id}-arrow`}
+          id={`${id}-tip`}
           viewBox="0 0 10 10"
-          refX="9"
+          refX="8"
           refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
+          markerWidth="7.5"
+          markerHeight="7.5"
+          markerUnits="userSpaceOnUse"
+          orient="auto"
         >
-          <path d="M 1 1 L 9 5 L 1 9" class="arrowhead"></path>
+          <path d="M0.5,0.8 L9.5,5 L0.5,9.2 L2.6,5 Z" class="tip"></path>
         </marker>
         <marker
-          id={`${id}-gradient-arrow`}
+          id={`${id}-gradient-tip`}
           viewBox="0 0 10 10"
-          refX="9"
+          refX="8"
           refY="5"
-          markerWidth="6"
-          markerHeight="6"
-          orient="auto-start-reverse"
+          markerWidth="8.5"
+          markerHeight="8.5"
+          markerUnits="userSpaceOnUse"
+          orient="auto"
         >
-          <path d="M 1 1 L 9 5 L 1 9" class="gradient-arrowhead"></path>
+          <path d="M0.5,0.8 L9.5,5 L0.5,9.2 L2.6,5 Z" class="gradient-tip"
+          ></path>
         </marker>
       </defs>
 
-      <!-- Draw dependencies before nodes so blocks remain visually distinct. -->
-      <g class="edges forward-edges" marker-end={`url(#${id}-arrow)`}>
-        {edges.map((d) => <path d={d} />)}
+      <g class="edges forward-edges" marker-end={`url(#${id}-tip)`}>
+        {
+          layout.flatMap(({ edges }) =>
+            edges.map(({ forward }) => <path d={forward} />),
+          )
+        }
+        <path class="continuation" d={continuation.right}></path>
+        <path class="continuation" d={continuation.up}></path>
       </g>
       <g
         class="edges gradient-edges"
-        marker-end={`url(#${id}-gradient-arrow)`}
+        marker-end={`url(#${id}-gradient-tip)`}
         aria-hidden="true"
       >
+        <path
+          class="continuation"
+          data-gradient-context
+          d={continuation.rightGradient}></path>
+        <path
+          class="continuation"
+          data-gradient-context
+          d={continuation.upGradient}></path>
         {
-          gradientEdges.map((d, index) => (
-            <path
-              d={d}
-              data-gradient-step={Math.floor(index / 6)}
-              data-gradient-branch={index % 6}
-            />
-          ))
+          layout.flatMap(({ step, edges }) =>
+            edges.map(({ branch, gradient }) => (
+              <path
+                d={gradient}
+                data-gradient-step={step}
+                data-gradient-branch={branch}
+              />
+            )),
+          )
         }
       </g>
 
       {
-        steps.map((step) => (
+        layout.map(({ step, nodes }) => (
           <>
-            <g
-              class="node policy"
-              data-node={`policy-${step}`}
-              transform={`translate(${stateX(step) + 52}, 214)`}
-            >
-              <circle r="20" />
-              <text y="5">
-                π
-                <tspan class="subscript" dy="4">
-                  θ
-                </tspan>
-              </text>
-            </g>
             <g
               class="node reward"
               data-node={`reward-${step}`}
-              transform={`translate(${stateX(step)}, 50)`}
+              transform={`translate(${nodes.reward.join(",")})`}
             >
-              <rect x="-34" y="-20" width="68" height="40" rx="4" />
-              <text y="7">
+              <circle r={R} />
+              <text y="6">
                 r
-                <tspan class="subscript" dy="5">
+                <tspan class="subscript" dy="6">
                   <tspan class="variable">t</tspan>
-                  {step > 0 ? `+${step}` : ""}
+                  {sub(step)}
                 </tspan>
               </text>
             </g>
             <g
               class="node action"
               data-node={`action-${step}`}
-              transform={`translate(${stateX(step) + 105}, 157)`}
+              transform={`translate(${nodes.action.join(",")})`}
             >
-              <rect x="-34" y="-20" width="68" height="40" rx="4" />
-              <text y="7">
+              <circle r={R} />
+              <text y="6">
                 a
-                <tspan class="subscript" dy="5">
+                <tspan class="subscript" dy="6">
                   <tspan class="variable">t</tspan>
-                  {step > 0 ? `+${step}` : ""}
+                  {sub(step)}
                 </tspan>
               </text>
+            </g>
+            <g
+              class="node state"
+              data-node={`state-${step}`}
+              transform={`translate(${nodes.state.join(",")})`}
+            >
+              <circle r={R} />
+              <text y="6">
+                s
+                <tspan class="subscript" dy="6">
+                  <tspan class="variable">t</tspan>
+                  {sub(step)}
+                </tspan>
+              </text>
+            </g>
+            <g
+              class="node policy block"
+              data-node={`policy-${step}`}
+              transform={`translate(${nodes.policy.join(",")})`}
+            >
+              <rect x={-P} y={-P} width={2 * P} height={2 * P} rx="5" />
+              <text y="5">
+                μ
+                <tspan class="subscript" dy="3">
+                  θ
+                </tspan>
+              </text>
+            </g>
+            <g
+              class="node block transition"
+              data-node={`transition-${step}`}
+              transform={`translate(${nodes.transition.join(",")})`}
+            >
+              <rect x={-P} y={-P} width={2 * P} height={2 * P} rx="5" />
+              <text y="5">f</text>
             </g>
           </>
         ))
       }
-      {
-        [0, 1, 2, 3].map((step) => (
-          <g
-            class="node state"
-            data-node={`state-${step}`}
-            transform={`translate(${stateX(step)}, 270)`}
-          >
-            <rect x="-34" y="-20" width="68" height="40" rx="4" />
-            <text y="7">
-              s
-              <tspan class="subscript" dy="5">
-                <tspan class="variable">t</tspan>
-                {step > 0 ? `+${step}` : ""}
-              </tspan>
-            </text>
-          </g>
-        ))
-      }
-      <g class="continuation" clip-path={`url(#${id}-cut)`} aria-hidden="true">
-        <g class="edges forward-edges" marker-end={`url(#${id}-arrow)`}>
-          <path d="M 796 270 H 935"></path>
-          <path d="M 781 250 L 799 231"></path>
-          <path d="M 828 199 L 845 180"></path>
-          <path d="M 762 250 V 73"></path>
-          <path d="M 848 137 L 785 73"></path>
-        </g>
-        <g
-          class="edges gradient-edges"
-          data-gradient-context
-          marker-end={`url(#${id}-gradient-arrow)`}
+      <g
+        class="node state"
+        data-node="state-3"
+        transform={`translate(${last.join(",")})`}
+      >
+        <circle r={R}></circle>
+        <text y="6"
+          >s<tspan class="subscript" dy="6"
+            ><tspan class="variable">t</tspan>+3</tspan
+          ></text
         >
-          <path d="M 938 278 H 800"></path>
-          <path d="M 817 236 Q 816 251 800 259"></path>
-          <path d="M 863 181 Q 858 200 837 211"></path>
-          <path d="M 754 74 V 246"></path>
-          <path d="M 796 78 L 859 132"></path>
-        </g>
-        <g class="node reward" transform="translate(762, 50)">
-          <rect x="-34" y="-20" width="68" height="40" rx="4"></rect>
-          <text y="7"
-            >r<tspan class="subscript" dy="5"
-              ><tspan class="variable">t</tspan>+3</tspan
-            ></text
-          >
-        </g>
-        <g class="node policy" transform="translate(814, 214)">
-          <circle r="20"></circle>
-          <text y="5">π<tspan class="subscript" dy="4">θ</tspan></text>
-        </g>
-      </g>
-      <g class="row-labels">
-        <text x="0" y="57">Reward</text>
-        <text x="0" y="164">Action</text>
-        <text x="0" y="277">State</text>
       </g>
     </svg>
   </div>
@@ -225,9 +323,13 @@ const gradientEdges = steps.flatMap((step) => {
     Scroll horizontally to follow the trajectory →
   </div>
   <figcaption class="chart-caption">
-    Each state feeds the policy, and each state–action pair determines the
-    reward and the next state. The circles represent the policy. Toggle gradient
-    flow to follow return derivatives backward through the graph.
+    <strong>Figure 2.</strong>{" "}Computational graph of a trajectory. Each
+    state passes through the policy <i>μ</i><sub>θ</sub>{" "}to give the action,
+    and the transition{" "}<i>f</i>{" "}combines the state and the action into
+    the next state. Each reward depends on the state and the action. Switch on{
+      " "
+    }<strong>Compute gradient</strong>{" "}to follow the return derivatives
+    backward through the graph.
   </figcaption>
 </figure>
 
@@ -266,7 +368,6 @@ const gradientEdges = steps.flatMap((step) => {
       let elapsed = 0;
       let lastTime: number | undefined;
       let visible = false;
-
       const clear = () => {
         paths.forEach(({ element }) => {
           element.style.removeProperty("stroke-dasharray");
@@ -332,9 +433,9 @@ const gradientEdges = steps.flatMap((step) => {
 <style>
   .trajectory-graph {
     container-type: inline-size;
-    /* Blues accent; neutral colors, font, width, and caption come from the shared figure style. */
+    /* Blues accent for decisions; neutral colors, font, width, and caption come from the shared figure style. */
     --graph-accent: light-dark(#2171b5, #6baed6);
-    --graph-gradient: light-dark(#b91c1c, #f87171);
+    --graph-gradient: light-dark(#d94801, #fd8d3c);
   }
   .graph-scroll {
     overflow-x: auto;
@@ -346,56 +447,64 @@ const gradientEdges = steps.flatMap((step) => {
   svg {
     display: block;
     width: 100%;
-    min-width: 660px;
-    font-family: inherit;
+    min-width: 600px;
   }
   .edges {
     fill: none;
-    stroke: var(--chart-baseline);
-    stroke-width: 2;
+    stroke-width: 1.85;
     stroke-linecap: round;
     stroke-linejoin: round;
   }
-  .arrowhead {
-    fill: none;
+  .forward-edges {
     stroke: var(--chart-baseline);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
   }
-  .node rect,
-  .node circle {
+  .tip {
+    fill: var(--chart-baseline);
+  }
+  .gradient-tip {
+    fill: var(--graph-gradient);
+  }
+  .continuation {
+    stroke-dasharray: 2 5;
+  }
+  .forward-edges .continuation {
+    opacity: 0.75;
+  }
+  .node circle,
+  .node rect {
     fill: var(--chart-canvas);
     stroke: var(--chart-baseline);
-    stroke-width: 1.6;
+    stroke-width: 1.35;
   }
   .node text {
     fill: var(--chart-text);
     text-anchor: middle;
-    font-size: calc(21px * var(--figure-font-scale));
-    font-style: italic;
-    font-weight: 400;
+    font-family: KaTeX_Math, "Times New Roman", serif;
+    font-size: calc(16.5px * var(--figure-font-scale));
   }
   .subscript {
-    font-size: 60%;
-    font-style: normal;
+    font-family: KaTeX_Main, "Times New Roman", serif;
+    font-size: 64%;
   }
-  .variable {
-    font-style: italic;
+  .subscript .variable {
+    font-family: KaTeX_Math, "Times New Roman", serif;
   }
-  .action rect {
-    fill: color-mix(in srgb, var(--graph-accent) 12%, var(--chart-canvas));
+  .block text {
+    font-size: calc(13px * var(--figure-font-scale));
+  }
+  .action circle {
+    fill: color-mix(in srgb, var(--graph-accent) 13%, var(--chart-canvas));
     stroke: var(--graph-accent);
   }
-  .action text {
-    fill: var(--graph-accent);
-  }
-  .policy circle {
-    stroke: var(--graph-accent);
-  }
+  .action text,
   .policy text {
     fill: var(--graph-accent);
-    font-size: calc(15px * var(--figure-font-scale));
+  }
+  .policy rect {
+    stroke: var(--graph-accent);
+  }
+  .reward circle {
+    fill: color-mix(in srgb, var(--chart-baseline) 9%, var(--chart-canvas));
   }
   .graph-controls input[role="switch"] {
     color: var(--graph-gradient);
@@ -405,42 +514,32 @@ const gradientEdges = steps.flatMap((step) => {
     margin-top: 0;
     margin-bottom: 0.75rem;
   }
+  /* The gradient runs along the forward lines, which fade to a faint guide. */
   .gradient-edges {
     display: none;
-  }
-  .gradient-edges {
     stroke: var(--graph-gradient);
-  }
-  .gradient-arrowhead {
-    fill: none;
-    stroke: var(--graph-gradient);
-    stroke-width: 1.5;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+    stroke-width: 2.7;
   }
   [data-gradient="true"] .gradient-edges {
     display: inline;
   }
-  [data-motion="running"] [data-gradient-context] {
-    opacity: 0.35;
+  [data-gradient="true"] .forward-edges {
+    opacity: 0.22;
   }
-  .node[data-lit="true"] rect,
-  .node[data-lit="true"] circle {
+  .gradient-edges [data-gradient-context] {
+    opacity: 0.45;
+  }
+  /* Reduced motion shows the finished pass, with every node lit. */
+  [data-gradient="true"][data-motion="static"] .node circle,
+  [data-gradient="true"][data-motion="static"] .node rect,
+  .node[data-lit="true"] circle,
+  .node[data-lit="true"] rect {
     stroke: var(--graph-gradient);
     fill: color-mix(in srgb, var(--graph-gradient) 10%, var(--chart-canvas));
   }
+  [data-gradient="true"][data-motion="static"] .node text,
   .node[data-lit="true"] text {
     fill: var(--graph-gradient);
-  }
-  .continuation .edges,
-  .continuation .node rect,
-  .continuation .node circle {
-    stroke-dasharray: 4 4;
-  }
-  .row-labels {
-    fill: var(--chart-text);
-    font-size: calc(16px * var(--figure-font-scale));
-    font-weight: 400;
   }
   .scroll-hint {
     display: none;
@@ -448,7 +547,7 @@ const gradientEdges = steps.flatMap((step) => {
     color: var(--chart-muted);
     font-size: 0.8rem;
   }
-  @container (max-width: 660px) {
+  @container (max-width: 600px) {
     .scroll-hint {
       display: block;
     }

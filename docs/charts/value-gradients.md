@@ -31,16 +31,27 @@ REINFORCE is dashed red and the value-gradient curve is solid blue, with equal s
 
 ## Trajectory graph
 
-`src/components/ValueGradientGraph.astro` draws the policy, state, action, and
-reward dependencies. Its **Compute gradient** switch animates reverse flow using
-`src/lib/value-gradients/gradient-flow.mjs`. The schedule waits for downstream and
-local reward contributions before propagating through the policy; it illustrates
-reverse-mode differentiation rather than computing numerical gradients.
+`src/components/ValueGradientGraph.astro` draws three steps of the reparameterized
+recursion. Variables are circles: states are plain, actions use the Blues accent,
+and rewards have a light neutral fill. The two functions of the recursion, the
+policy `μθ` and the transition `f`, are small rounded squares. Every connector is
+horizontal or vertical with rounded elbows, so no arrows overlap or cross. One
+trunk rises from each state and forks into the policy and the reward. Dashed
+lines continue the chain to the right of the last state and up its trunk.
+
+The **Compute gradient** switch animates reverse flow along the same connectors
+in dark orange, using `src/lib/value-gradients/gradient-flow.mjs`, while the
+forward graph fades to a faint guide. A node lights when its last incoming
+derivative arrives, and the reward's and policy's derivatives meet at the fork
+on their way back into each state. The schedule illustrates reverse-mode
+differentiation rather than computing numerical gradients. Orange is reserved
+for this figure, since red marks REINFORCE and zero reward in the explorer.
 
 The animation pauses outside the viewport and when the document is hidden.
-Reduced-motion mode uses static arrows. On narrow screens, the graph scrolls
-horizontally inside its frame. `tests/gradient-flow.test.mjs` checks the schedule
-and edge progress.
+Reduced-motion mode shows the finished backward pass without animation. On
+narrow screens, the graph scrolls horizontally inside its frame.
+`tests/gradient-flow.test.mjs` checks that every derivative leaves a lit node
+and arrives before its destination lights.
 
 ## Checks
 

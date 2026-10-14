@@ -2,45 +2,62 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   createGradientFlowTimeline,
+  gradientEdgeNodes,
   gradientFlowProgress,
   GRADIENT_BRANCH as B,
 } from "../src/lib/value-gradients/gradient-flow.mjs";
 
-test("reverse flow begins at the rightmost state and adds each local reward", () => {
+test("reverse flow begins at the rightmost state and covers every edge once", () => {
   const timeline = createGradientFlowTimeline(3);
   assert.deepEqual(timeline.nodes[0], { key: "state-3", at: 0 });
-  assert.equal(timeline.edges.length, 18);
+  assert.equal(timeline.edges.length, 3 * Object.keys(B).length);
+  const keys = new Set(
+    timeline.edges.map(({ step, branch }) => `${step}:${branch}`),
+  );
+  assert.equal(keys.size, timeline.edges.length);
   const rewards = timeline.nodes.filter(({ key }) => key.startsWith("reward"));
   assert.deepEqual(
     rewards.map(({ key }) => key),
     ["reward-2", "reward-1", "reward-0"],
   );
-  assert(rewards.every(({ at }) => at > 0));
   assert(timeline.duration > Math.max(...timeline.nodes.map(({ at }) => at)));
 });
 
-test("each action waits for downstream and reward contributions before the policy propagates", () => {
+test("each derivative leaves a lit node and arrives no later than its destination lights", () => {
   const { edges, nodes } = createGradientFlowTimeline(3);
+  const at = Object.fromEntries(nodes.map(({ key, at }) => [key, at]));
+  for (const { step, branch, start, duration } of edges) {
+    const [source, destination] = gradientEdgeNodes(step, branch);
+    assert(duration > 0);
+    assert(start >= at[source], `${source} lights before its edge starts`);
+    assert(
+      start + duration <= at[destination],
+      `${destination} waits for its edge`,
+    );
+  }
+});
+
+test("a node lights exactly when its last incoming derivative arrives", () => {
+  const { edges, nodes } = createGradientFlowTimeline(3);
+  for (const { key, at } of nodes) {
+    const arrivals = edges
+      .filter(({ step, branch }) => gradientEdgeNodes(step, branch)[1] === key)
+      .map(({ start, duration }) => start + duration);
+    if (arrivals.length) assert.equal(at, Math.max(...arrivals), key);
+  }
+});
+
+test("each state collects from its transition, reward, and policy", () => {
+  const { edges } = createGradientFlowTimeline(3);
   for (let step = 0; step < 3; step++) {
-    const edge = (branch) =>
-      edges.find((e) => e.step === step && e.branch === branch);
-    const node = (key) => nodes.find((n) => n.key === key).at;
-    const action = edge(B.ACTION_TO_POLICY);
-    const policy = edge(B.POLICY_TO_STATE);
-    for (const branch of [
-      B.NEXT_STATE_TO_STATE,
-      B.NEXT_STATE_TO_ACTION,
-      B.REWARD_TO_STATE,
-      B.REWARD_TO_ACTION,
-    ]) {
-      assert.equal(edge(branch).start, node(`reward-${step}`));
-      assert(edge(branch).start >= node(`state-${step + 1}`));
-      assert.equal(edge(branch).start + edge(branch).duration, action.start);
-    }
-    assert.equal(node(`action-${step}`), action.start);
-    assert.equal(action.start + action.duration, policy.start);
-    assert.equal(node(`policy-${step}`), policy.start);
-    assert.equal(node(`state-${step}`), policy.start + policy.duration);
+    const into = edges
+      .filter((e) => gradientEdgeNodes(e.step, e.branch)[1] === `state-${step}`)
+      .map(({ branch }) => branch)
+      .sort();
+    assert.deepEqual(
+      into,
+      [B.TRANSITION_TO_STATE, B.REWARD_TO_STATE, B.POLICY_TO_STATE].sort(),
+    );
   }
 });
 
